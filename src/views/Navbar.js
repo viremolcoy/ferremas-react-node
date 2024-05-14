@@ -3,6 +3,7 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../assets/img/logo.png';
 import dualipa from '../assets/img/dualipa.jpg';
+import Login from './Login';
 const navigation = [
   { name: 'Construcción', href: '#', current: true },
   { name: 'Ferreteria', href: '#', current: false },
@@ -99,6 +100,16 @@ export default function Navbar() {
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Carrito
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <a
+                            href="/Login"
+                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                          >
+                            Iniciar sesión
                           </a>
                         )}
                       </Menu.Item>
