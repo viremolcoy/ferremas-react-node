@@ -1,15 +1,15 @@
 const express = require('express');
 const cors = require('cors');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 const app = express();
 
 app.use(cors()); // Agregar este middleware para permitir solicitudes de cualquier origen
 
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: '127.0.0.1',
   user: 'root',
-  password: 'nanito.10',
+  password: '',
   database: 'ferremas'
 });
 
@@ -24,18 +24,18 @@ connection.connect(err => {
 
 // Ruta para obtener los libros de la base de datos
 app.get('/productos', (req, res) => {
-  connection.query('SELECT id, nombre, precio FROM producto', (error, results) => {
-    if (error) {
-      console.error('Error al obtener los productos:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
-      return;
-    }
-    res.json(results);
-  });
+    connection.query('SELECT id, nombre, precio FROM Producto', (error, results) => {
+        if (error) {
+            console.error('Error al obtener los productos:', error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+            return;
+        }
+        res.json(results);
+    });
 });
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3306;
 app.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en el puerto ${PORT}`);
+    console.log('Servidor backend corriendo en el puerto', PORT);
 });
