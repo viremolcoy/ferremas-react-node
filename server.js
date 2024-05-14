@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 
 const app = express();
 
-app.use(cors()); // Agregar este middleware para permitir solicitudes de cualquier origen
+app.use(cors()); 
 
 const connection = mysql.createConnection({
   host: '127.0.0.1',
