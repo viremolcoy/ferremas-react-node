@@ -1,23 +1,43 @@
-import logo from './logo.svg';
+// En tu App.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
+  const [productos, setProductos] = useState([]);
+
+  useEffect(() => {
+    // Realiza una solicitud HTTP GET a la ruta /productos del servidor backend
+    axios.get('http://localhost:5000/productos')
+      .then(response => {
+        // Actualiza el estado con los datos de los productos
+        setProductos(response.data);
+      })
+      .catch(error => {
+        console.error('Error al obtener los productos:', error);
+      });
+  }, []); // Se ejecuta solo una vez al cargar el componente
+
+  // Función para generar la ruta de la imagen en función de la ID del producto
+  const generarRutaImagen = (idProducto) => {
+    // Concatena la ID del producto con la extensión de la imagen
+    const ruta = process.env.PUBLIC_URL + '/imagenes/' + idProducto + '.jpeg';
+    console.log('Ruta de la imagen:', ruta);
+    return ruta;
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Listado de Productos</h1>
+      <div className="productos-container">
+        {/* Mapea los productos y crea un elemento para cada uno */}
+        {productos.map(producto => (
+          <div key={producto.id} className="producto">
+            <img src={generarRutaImagen(producto.id)} alt={producto.nombre} />
+            <p>{producto.nombre} - {producto.precio}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
