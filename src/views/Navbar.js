@@ -3,12 +3,12 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../assets/img/logo.png';
 import dualipa from '../assets/img/dualipa.jpg';
-import Login from './Login';
+import Home from './Home';
 const navigation = [
-  { name: 'Construcción', href: '#', current: true },
-  { name: 'Ferreteria', href: '#', current: false },
-  { name: 'Gasfitería y electricidad', href: '#', current: false },
-  { name: 'Herramientas y maquinaria', href: '#', current: false },
+  { name: 'Inicio', href: '/Home', current: false },
+  { name: 'Materiales básico', href: '#', current: false },
+  { name: 'Herramientas manuales', href: '#', current: false },
+  { name: 'Tornillos y anclajes', href: '#', current: false },
 ]
 
 function classNames(...classes) {
