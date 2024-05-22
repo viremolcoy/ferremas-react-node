@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../App.css';
 import Navbar from './Navbar';
+import { Link } from 'react-router-dom';  // Importa Link de React Router
 
 
 export function ProductosCat() {
@@ -36,11 +37,13 @@ export function ProductosCat() {
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 text-center">{categoria.descripcion}</h1>
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
             {categoria.productos.map((producto, index) => (
+              <Link to={`/producto/${producto.id}`}>  {/* Enlace a la página de detalles del producto */}
               <div key={index}>
               <img src={generarRutaImagen(producto.id)} alt={producto.nombre} />
               <h2>{producto.nombre}</h2>
               <p>{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
             </div>
+            </Link>
             ))}
           </div>
         </div>

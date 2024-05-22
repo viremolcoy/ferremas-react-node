@@ -1,11 +1,10 @@
-// En tu App.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './App.css';
+import React from 'react';
+import { RouterProvider } from 'react-router-dom';
+import router from './router';
 
 function App() {
   return (
-  <h1>Hola</h1>
+    <RouterProvider router={router} />
   );
 }
 
