@@ -9,6 +9,10 @@ import App from './App.js';
 
 const router = createBrowserRouter([
   {
+    path: '/',
+    element: <Home /> 
+  },
+  {
     path: '/productos',
     element: <Productos /> // Página principal que muestra los productos
   },

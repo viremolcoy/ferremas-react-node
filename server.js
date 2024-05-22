@@ -11,7 +11,6 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'admin',
-  password: '',
   database: 'ferremas'
 });
 
