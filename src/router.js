@@ -6,11 +6,18 @@ import ProductosCat from './views/ProductosCat';
 import SeleccionProducto from './views/SeleccionProducto';
 import Productos from './views/Productos'; // Asegúrate de que la ruta a Productos es correcta
 import App from './App.js';
+import CarritoDesplegable from './views/CarritoDesplegable.js';
+import DetalleCompra from './views/DetalleCompra.js';
+
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Home /> 
+  },
+  {
+    path: '/carrito/:id',
+    element: <CarritoDesplegable /> 
   },
   {
     path: '/productos',
@@ -19,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />
+  },
+  {
+    path: '/detallecompra',
+    element: <DetalleCompra />
   },
   {
     path: '/home',

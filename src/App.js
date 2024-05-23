@@ -1,10 +1,19 @@
-import React from 'react';
-import { RouterProvider } from 'react-router-dom';
-import router from './router';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import SeleccionProducto from './views/SeleccionProducto';
+import CarritoDesplegable from './views/CarritoDesplegable';
+
 
 function App() {
+  const [carrito, setCarrito] = useState([]);
+
+
   return (
-    <RouterProvider router={router} />
+    <Router>
+        <Route path="/producto/:id">
+        </Route>
+      <CarritoDesplegable carrito={carrito} />
+    </Router>
   );
 }
 
