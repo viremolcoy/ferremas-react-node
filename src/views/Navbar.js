@@ -8,7 +8,7 @@ import CarritoDesplegable from './CarritoDesplegable';
 
 const navigation = [
   { name: 'Inicio', href: '/Home', current: false },
-  { name: 'Productos', href: '/TodosProductos', current: false },
+  { name: 'Productos', href: '/Productos', current: false },
   { name: 'Materiales básico', href: '#', current: false },
   { name: 'Herramientas manuales', href: '#', current: false },
   { name: 'Tornillos y anclajes', href: '#', current: false },
