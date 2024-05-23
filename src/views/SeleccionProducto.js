@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import { Footer } from './Footer';
+import { Link } from 'react-router-dom'; 
 import ferreteria from '../assets/img/ferreteria.png';
 import ferre from '../assets/img/RedMat2.png'; 
 
@@ -10,6 +11,7 @@ import ferre from '../assets/img/RedMat2.png';
 function SeleccionProducto() {
   const { id } = useParams(); // Obtener el id del producto de los parámetros de la URL
   const [producto, setProducto] = useState(null);
+  const [carrito, setCarrito] = useState([]);
 
   useEffect(() => {
     axios.get(`http://localhost:3307/productos/${id}`)
@@ -21,6 +23,30 @@ function SeleccionProducto() {
         console.error('Error al obtener el producto:', error);
       });
   }, [id]);
+
+  useEffect(() => {
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
+    if (carritoGuardado) {
+      setCarrito(carritoGuardado);
+    }
+  }, []);
+
+  const guardarCarritoEnLocalStorage = (carrito) => {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+  };
+
+  const agregarAlCarrito = (producto) => {
+    const index = carrito.findIndex((item) => item.id === producto.id);
+    if (index !== -1) {
+      const nuevoCarrito = [...carrito];
+      nuevoCarrito[index].cantidad += 1;
+      setCarrito(nuevoCarrito);
+      guardarCarritoEnLocalStorage(nuevoCarrito);
+    } else {
+      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+      guardarCarritoEnLocalStorage([...carrito, { ...producto, cantidad: 1 }]);
+    }
+  };
 
 
     // Función para generar la ruta de la imagen del producto
@@ -74,8 +100,7 @@ function SeleccionProducto() {
               <h2 className="sr-only">Información producto</h2>
               <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
               <form className="mt-10">
-
-                <button type="submit" className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Añadir al carrito</button>
+                <button type="submit" onClick={() => agregarAlCarrito(producto)} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Añadir al carrito</button>
               </form>
             </div>
             <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
@@ -101,3 +126,4 @@ function SeleccionProducto() {
 }
 
 export default SeleccionProducto;
+
