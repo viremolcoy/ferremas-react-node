@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar';
-import Productos from './Productos';
+import Productos from './ListadoProductos';
 import ProductosCat from './ProductosCat';
 import CarouselComponent from './CarouselComponent';
 import { Footer } from './Footer';
@@ -26,13 +26,8 @@ export default function Home() {
             <Navbar />  
 
             <CarouselComponent />
-
-            <Productos />
-            <br>
-            </br>
-            <h1 className="text-center text-4xl font-bold">
-                Categorías
-            </h1>
+  
+            <h1 className="text-center font-bold mt-20 pb-4">Productos por Categoría</h1>
 
             <ProductosCat />
 
