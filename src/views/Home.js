@@ -1,12 +1,15 @@
 import React from 'react';
-import Productos from './Productos';
 import Navbar from './Navbar';
-// import Carrusel from './Carrusel'; 
-import { Footer } from './Footer';
-import ferreteria from '../assets/img/ferreteria.png';
-import ferre from '../assets/img/RedMat2.png'; 
-import '../App.css';
+import Productos from './Productos';
 import ProductosCat from './ProductosCat';
+import CarouselComponent from './CarouselComponent';
+import { Footer } from './Footer';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../index.css';
+import '../App.css';
+
+
+
 
 
 export default function Home() {
@@ -22,7 +25,7 @@ export default function Home() {
         <div>   
             <Navbar />  
 
-            
+            <CarouselComponent />
 
             <Productos />
             <br>
