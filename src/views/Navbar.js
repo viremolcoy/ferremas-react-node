@@ -22,7 +22,7 @@ export default function Navbar() {
   const [carritoVisible, setCarritoVisible] = useState(false);
 
   return (
-    <Disclosure as="nav" className="white">
+    <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -50,7 +50,7 @@ export default function Navbar() {
                         key={item.name}
                         href={item.href}
                         className={classNames(
-                          item.current ? 'text-black' : 'text-black hover:font-bold',
+                          item.current ? 'text-gray-400' : 'text-gray-400 hover:font-bold hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium'
                         )}
                         aria-current={item.current ? 'page' : undefined}
