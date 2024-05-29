@@ -8,10 +8,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import '../App.css';
 
-
-
-
-
 export default function Home() {
     const settings = {
         dots: true,

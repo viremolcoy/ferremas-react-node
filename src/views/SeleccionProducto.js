@@ -3,9 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import { Footer } from './Footer';
-import { Link } from 'react-router-dom'; 
-import ferreteria from '../assets/img/ferreteria.png';
-import ferre from '../assets/img/RedMat2.png'; 
+import '../index.css';
 
 
 function SeleccionProducto() {
@@ -24,12 +22,6 @@ function SeleccionProducto() {
       });
   }, [id]);
 
-  useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
-    if (carritoGuardado) {
-      setCarrito(carritoGuardado);
-    }
-  }, []);
 
   const guardarCarritoEnLocalStorage = (carrito) => {
     localStorage.setItem('carrito', JSON.stringify(carrito));
@@ -61,8 +53,9 @@ function SeleccionProducto() {
   return (
     
     <div className="producto-detalles">
-      <Navbar />  
-      <div className="bg-white">
+      <Navbar /> 
+
+      <div className="bg-white ">
         <div className="pt-6">
           <nav aria-label="Breadcrumb">
             <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -87,40 +80,36 @@ function SeleccionProducto() {
               </li>
             </ol>
           </nav>
-          <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
-            <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
-              <img src={generarRutaImagen(producto.id)} alt={producto.nombre} className="h-full w-full object-cover object-center"/>
-            </div>
-          </div>
-          <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
-            <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{producto.nombre}</h1>
-            </div>
-            <div className="mt-4 lg:row-span-3 lg:mt-0">
-              <h2 className="sr-only">Información producto</h2>
-              <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
-              <p className="text-2xl tracking-tight text-gray-900">Stock: {producto.stock}</p>
-              <form className="mt-10">
-                <button type="submit" onClick={() => agregarAlCarrito(producto)} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Añadir al carrito</button>
-              </form>
-            </div>
-            <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
-              <div>
-                <h3 className="sr-only">Descripción</h3>
-                <div className="space-y-6">
-                  <p className="text-base text-gray-900">{producto.nombre}</p>
-                </div>
+          
+          <div class="mx-auto mt-6 max-w-4xl sm:px-6 lg:max-w-7xl lg:px-8 grid grid-cols-1 lg:grid-cols-2">
+             
+              <div class="p-10 flex justify-center items-center">
+                  <img src={generarRutaImagen(producto.id)} alt={producto.nombre} class="w-full h-auto object-cover"/>
               </div>
-              <div className="mt-10">
-                <h2 className="text-sm font-medium text-gray-900">Descripción</h2>
-                <div className="mt-4 space-y-6">
-                  <p className="text-sm text-gray-600">{producto.descripcion}</p>
-                </div>
+              
+                <div class="flex flex-col justify-center items-start space-y-4 p-4">
+                  <div className="lg:col-span-2 lg:pr-8">
+                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{producto.nombre}</h1>
+                  </div>
+                  <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
+                  <p className="text-2xl tracking-tight text-gray-900">Stock: {producto.stock}</p>
+                  <form className="mt-10">
+                    <button type="submit" onClick={() => agregarAlCarrito(producto)} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Añadir al carrito</button>
+                  </form>
+                  <div className="pt-10 lg:col-span-2 lg:col-start-1 lg:pb-16 lg:pr-8 lg:pt-6">
+                    <div>
+                      <h2 className="text-sm font-medium text-gray-900">Descripción</h2>
+                      <div className="mt-4 space-y-6">
+                        <p className="text-sm text-gray-600">{producto.descripcion}</p>
+                      </div>
+                    </div>
+                  </div>
               </div>
-            </div>
+
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );
