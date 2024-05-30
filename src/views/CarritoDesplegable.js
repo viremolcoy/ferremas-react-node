@@ -4,9 +4,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';  // Importa Link de React Router
 import { useParams } from 'react-router-dom';
-import Navbar from './Navbar';
 
 
 export default function CarritoDesplegable({ onClose }) {
@@ -90,6 +88,9 @@ export default function CarritoDesplegable({ onClose }) {
       return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
     };
 
+
+    const [url, setUrl] = useState('');
+    
   if (!producto) {
     return <div>Cargando...</div>;
   }
@@ -99,6 +100,35 @@ export default function CarritoDesplegable({ onClose }) {
     setOpen(false);
     onClose();
   };
+
+
+
+  fetch('http://localhost:3307/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      amount: calcularPrecioTotal(),
+      sessionId: 'ferre-01',
+      buyOrder: 'ferre123',
+      returnUrl: 'http://localhost:3000/compraRealizada',
+    }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('URL:', data.url);
+    console.log('Token:', data.token);
+    console.log('Return URL:', data.returnUrl);
+    setUrl(data.url);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+
+  
+
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -188,6 +218,10 @@ export default function CarritoDesplegable({ onClose }) {
                         ))}
                     </div>
 
+
+
+
+
                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                       <div>
@@ -196,14 +230,12 @@ export default function CarritoDesplegable({ onClose }) {
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Tus compras pueden estar sujetas a impuestos</p>
                       <div className="mt-6">
-                      <Link to={`/detallecompra/`}> 
-                        <a
-                          href="#"
-                          className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                        >
-                          Ir a pagar
-                        </a>
-                      </Link>
+                      
+                        <form method="post" action="https://webpay3gint.transbank.cl/webpayserver/initTransaction">
+                          <input type="hidden" name="token_ws" value="01ab6cc5157e46da7ff90e88fd38884d7313545a671c25989fb656b673a7ef21" />
+                          <input className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700" type="submit" value="Ir a pagar" />
+                        </form>
+                  
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                         <p>

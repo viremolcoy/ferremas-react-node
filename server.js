@@ -1,16 +1,24 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
-
 const app = express();
+const WebpayPlus = require("transbank-sdk").WebpayPlus; // CommonJS
+const { Options, IntegrationApiKeys, Environment, IntegrationCommerceCodes } = require("transbank-sdk");
+
+
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(express.json());
 
 app.use(cors()); 
 
 
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: '127.0.0.1',
   user: 'root',
-  password: 'admin',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -22,6 +30,31 @@ connection.connect(err => {
   console.log('Conexión exitosa a la base de datos MySQL');
 });
 
+
+WebpayPlus.commerceCode = 597055555532;
+WebpayPlus.apiKey = '579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C';
+WebpayPlus.environment = Environment.Integration;
+
+app.post('/create', async (req, res) => {
+  const { buyOrder, sessionId, amount, returnUrl } = req.body;
+  const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+  const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
+  res.json({
+    url: response.url,
+    token: response.token,
+    returnUrl: response.returnUrl
+  });
+  console.log("create url: ",response.url);
+  console.log("create token: ",response.token);
+  console.log("create return: ",response.returnUrl);
+});
+
+app.post('/commit', async (req, res) => {
+  const { token } = req.body;
+  const response = await WebpayPlus.Transaction.commit(token);
+  console.log("commit: ",response);
+  res.json(response);
+});
 
 // Ruta para obtener los productos de la base de datos
 app.get('/productos', (req, res) => {
