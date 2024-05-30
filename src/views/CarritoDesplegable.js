@@ -4,7 +4,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';  // Importa Link de React Router
 import { useParams } from 'react-router-dom';
 
 
@@ -113,7 +112,7 @@ export default function CarritoDesplegable({ onClose }) {
       amount: calcularPrecioTotal(),
       sessionId: 'ferre-01',
       buyOrder: 'ferre123',
-      returnUrl: 'http://localhost:3000/home',
+      returnUrl: 'http://localhost:3000/compraRealizada',
     }),
   })
   .then(response => response.json())
@@ -126,6 +125,8 @@ export default function CarritoDesplegable({ onClose }) {
   .catch((error) => {
     console.error('Error:', error);
   });
+
+
   
 
 
@@ -231,7 +232,7 @@ export default function CarritoDesplegable({ onClose }) {
                       <div className="mt-6">
                       
                         <form method="post" action="https://webpay3gint.transbank.cl/webpayserver/initTransaction">
-                          <input type="hidden" name="token_ws" value="01ab545c40ddf60f6f93225c9c23ede3ecb938d8645b0e708839fd612571adda" />
+                          <input type="hidden" name="token_ws" value="01ab6cc5157e46da7ff90e88fd38884d7313545a671c25989fb656b673a7ef21" />
                           <input className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700" type="submit" value="Ir a pagar" />
                         </form>
                   
