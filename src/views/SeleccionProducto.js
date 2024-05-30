@@ -22,6 +22,13 @@ function SeleccionProducto() {
       });
   }, [id]);
 
+  useEffect(() => {
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
+    if (carritoGuardado) {
+      setCarrito(carritoGuardado);
+    }
+  }, []);
+
 
   const guardarCarritoEnLocalStorage = (carrito) => {
     localStorage.setItem('carrito', JSON.stringify(carrito));
