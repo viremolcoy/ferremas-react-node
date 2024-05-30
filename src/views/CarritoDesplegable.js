@@ -87,7 +87,15 @@ export default function CarritoDesplegable({ onClose }) {
     const generarRutaImagen = (idProducto) => {
       return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
     };
+
+
+    const [url, setUrl] = useState('');
     
+  if (!producto) {
+    return <div>Cargando...</div>;
+  }
+
+
   const handleClose = () => {
     setOpen(false);
     onClose();
@@ -119,7 +127,6 @@ export default function CarritoDesplegable({ onClose }) {
   });
 
 
-  
 
 
   return (
