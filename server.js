@@ -18,7 +18,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Lula7553',
+  password: 'nano2004',
   database: 'ferremas'
 });
 
@@ -109,7 +109,18 @@ app.get('/productos/:id', (req, res) => {
 
 
 
-
+// Ruta para obtener los productos por categoría
+app.get('/productos/categoria/:id', (req, res) => {
+  const { id } = req.params;
+  connection.query('SELECT id, nombre, precio FROM Producto WHERE categoria_id = ?', [id], (error, results) => {
+      if (error) {
+          console.error('Error al obtener los productos por categoría:', error);
+          res.status(500).json({ error: 'Error interno del servidor' });
+          return;
+      }
+      res.json(results);
+  });
+});
 
 
 // Ruta para obtener los clientes de la base de datos
@@ -123,6 +134,7 @@ app.get('/clientes', (req, res) => {
       res.json(results);
   });
 });
+
 
 // Ruta para obtener las categorías de la base de datos
 app.get('/categorias', (req, res) => {

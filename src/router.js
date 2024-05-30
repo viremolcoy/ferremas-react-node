@@ -9,7 +9,7 @@ import App from './App.js';
 import CarritoDesplegable from './views/CarritoDesplegable.js';
 import DetalleCompra from './views/DetalleCompra.js';
 import CompraRealizada from './views/CompraRealizada.js';
-
+import Productosnew from './views/Productosnew.js';
 
 const router = createBrowserRouter([
   {
@@ -27,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: '/productos',
     element: <Productos /> // Página principal que muestra los productos
+  },
+  {
+    path: '/productosnew',
+    element: <Productosnew /> // Página principal que muestra los productos
   },
   {
     path: '/login',
