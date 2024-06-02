@@ -26,6 +26,35 @@ connection.connect(err => {
   console.log('Conexión exitosa a la base de datos MySQL');
 });
 
+app.post('/ini-sesion', async (req, res) => {
+  const { correo, clave } = req.body;
+
+  // Buscar el usuario en la base de datos
+  const query = 'SELECT * FROM Usuario WHERE correo = ?';
+  const Usuario = await new Promise((resolve, reject) => {
+    connection.query(query, [correo], (error, results) => {
+      console.log('Usuario:', results);
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results[0]);
+      }
+    });
+  });
+
+  if (!Usuario) {
+    console.log('Usuario no encontrado');
+    return res.status(401).json({ message: 'Usuario no existe' });
+  }
+
+  // Comprobar la contraseña
+  if (clave !== Usuario.clave) {
+    return res.status(401).json({ message: 'Contraseña incorrecta' });
+  }
+
+  res.status(200).json({ message: 'Inicio de sesión exitoso' });
+});
+
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
 
