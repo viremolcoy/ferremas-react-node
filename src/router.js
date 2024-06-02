@@ -10,6 +10,7 @@ import CarritoDesplegable from './views/CarritoDesplegable.js';
 import DetalleCompra from './views/DetalleCompra.js';
 import CompraRealizada from './views/CompraRealizada.js';
 import Productosnew from './views/Productosnew.js';
+import ErrorCompra from './views/ErrorCompra.js';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: '/compraRealizada',
     element: <CompraRealizada />
+  },
+  {
+    path: '/errorCompra',
+    element: <ErrorCompra />    
   },
   {
     path: '/productos',

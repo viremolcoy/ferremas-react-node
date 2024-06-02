@@ -2,7 +2,8 @@ import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
+
 
 export default function CarritoDesplegable({ onClose }) {
   const [open, setOpen] = useState(true);
@@ -95,7 +96,7 @@ export default function CarritoDesplegable({ onClose }) {
     const buyOrder = `O-${Date.now()}`;
     const sessionId = `S-${Date.now()}`;
     const amount = calcularPrecioTotal();
-    const returnUrl = 'http://localhost:3000/compraRealizada'; // URL donde se redirigirá después del pago
+    const returnUrl = 'http://localhost:3307/commit-transaccion'; // URL donde se redirigirá después del pago
   
     try {
       const response = await axios.post('http://localhost:3307/crear-transaccion', {
@@ -115,6 +116,7 @@ export default function CarritoDesplegable({ onClose }) {
       tokenInput.name = 'token_ws';
       tokenInput.value = token;
       form.appendChild(tokenInput);
+      console.log('Token:', token);
   
       document.body.appendChild(form);
       form.submit();
@@ -122,29 +124,6 @@ export default function CarritoDesplegable({ onClose }) {
       console.error('Error al crear la transacción:', error);
     }
   };
-
-  fetch('http://localhost:3307/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      amount: calcularPrecioTotal(),
-      sessionId: 'ferre-01',
-      buyOrder: 'ferre123',
-      returnUrl: 'http://localhost:3000/compraRealizada',
-    }),
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('URL:', data.url);
-    console.log('Token:', data.token);
-    console.log('Return URL:', data.returnUrl);
-    setUrl(data.url);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
 
   return (
     <Transition.Root show={open} as={Fragment}>

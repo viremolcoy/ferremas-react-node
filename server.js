@@ -14,7 +14,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'nano2004',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -28,36 +28,6 @@ connection.connect(err => {
 
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
-app.post('/create', async (req, res) => {
-  const { buyOrder, sessionId, amount, returnUrl } = req.body;
-  try {
-    const tx = new WebpayPlus.Transaction();
-    const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
-    res.json({
-      url: response.url,
-      token: response.token,
-      returnUrl: response.returnUrl
-    });
-    console.log("create url: ", response.url);
-    console.log("create token: ", response.token);
-    console.log("create return: ", response.returnUrl);
-  } catch (error) {
-    console.error('Error al crear la transacción:', error);
-    res.status(500).json({ error: 'Error al crear la transacción' });
-  }
-});
-
-app.post('/commit', async (req, res) => {
-  const { token } = req.body;
-  try {
-    const response = await WebpayPlus.Transaction.commit(token);
-    console.log("commit: ", response);
-    res.json(response);
-  } catch (error) {
-    console.error('Error al confirmar la transacción:', error);
-    res.status(500).json({ error: 'Error al confirmar la transacción' });
-  }
-});
 
 app.post('/crear-transaccion', async (req, res) => {
   const { buyOrder, sessionId, amount, returnUrl } = req.body;
@@ -65,9 +35,37 @@ app.post('/crear-transaccion', async (req, res) => {
     const tx = new WebpayPlus.Transaction();
     const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
     res.json(response);
+    console.log("create url: ", response.url);
+    console.log("create token: ", response.token);
   } catch (error) {
     console.error('Error al crear la transacción:', error);
     res.status(500).json({ error: 'Error al crear la transacción' });
+  }
+});
+
+app.get('/commit-transaccion', async (req, res) => {
+  const { token_ws } = req.query;
+
+  console.log('Token recibido:', token_ws);
+
+  if (!token_ws || token_ws.trim() === '') {
+    console.error('Error: token no puede ser nulo o una cadena vacía');
+    res.status(400).redirect('http://localhost:3000/errorCompra');
+    return;
+  }
+  try {
+    const tx = new WebpayPlus.Transaction();
+    const response = await tx.commit(token_ws);
+    console.log('Respuesta recibida:', response);
+    if (response.response_code === 0) {
+      res.redirect('http://localhost:3000/compraRealizada');
+    } else {
+      res.redirect('http://localhost:3000/errorCompra');
+    }
+  } catch (error) {
+    console.error('Error al confirmar la transacción:', error);
+    console.log('Error al confirmar la transacción:', error);
+    res.status(500).redirect('http://localhost:3000/errorCompra');
   }
 });
 
