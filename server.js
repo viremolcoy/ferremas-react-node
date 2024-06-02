@@ -55,6 +55,32 @@ app.post('/ini-sesion', async (req, res) => {
   res.status(200).json({ message: 'Inicio de sesión exitoso' });
 });
 
+app.post('/registro-usuario', async (req, res) => {
+  const { nombre, apellido, rut, correo, clave } = req.body;
+
+  // verificar si el correo existe en la bd
+  const checkQuery = 'SELECT * FROM Usuario WHERE correo = ?';
+  connection.query(checkQuery, [correo], (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Error al verificar el correo' });
+    } else if (results.length > 0) {
+      res.status(400).json({ message: 'El correo ya está registrado' });
+    } else {
+      // si no existe el correo se inserta el nuevo usuario
+      const insertQuery = 'INSERT INTO Usuario (nombre, apellido, rut, correo, clave, Tipo_usuario_id) VALUES (?, ?, ?, ?, ?, 1)';
+      connection.query(insertQuery, [nombre, apellido, rut, correo, clave], (error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({ message: 'Error al registrar el usuario' });
+        } else {
+          res.status(200).json({ message: 'Registro exitoso' });
+        }
+      });
+    }
+  });
+});
+
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
 

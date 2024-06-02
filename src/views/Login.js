@@ -2,7 +2,7 @@ import axios from 'axios';
 import logo from '../assets/img/logo.png';
 import Navbar from './Navbar';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 
 export default function Login() {
@@ -103,9 +103,9 @@ export default function Login() {
     
               <p className="mt-10 text-center text-sm text-gray-500">
                 No tienes cuenta? {' '}
-                <a href="#" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                <Link to="/registro" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                   Registrate
-                </a>
+                </Link>
               </p>
             </div>
           </div>

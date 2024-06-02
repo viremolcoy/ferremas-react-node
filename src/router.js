@@ -11,6 +11,7 @@ import DetalleCompra from './views/DetalleCompra.js';
 import CompraRealizada from './views/CompraRealizada.js';
 import Productosnew from './views/Productosnew.js';
 import ErrorCompra from './views/ErrorCompra.js';
+import Registro from './views/Registro.js';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />
+  },
+  {
+    path: '/registro',
+    element: <Registro />
   },
   {
     path: '/detallecompra',
