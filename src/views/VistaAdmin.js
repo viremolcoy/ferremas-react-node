@@ -28,14 +28,18 @@ export default function VistaAdmin() {
     }
     
     function eliminarProducto(id) {
-      axios.delete(`http://localhost:3307/productos/${id}`)
+      axios.delete(`http://localhost:3307/eliminar-producto/${id}`)
         .then(() => {
           // después de eliminar, se obtienen los productos actualizados
           axios.get('http://localhost:3307/productos')
             .then(res => setProductos(res.data))
             .catch(err => console.error(err));
+          toast.success('Producto eliminado correctamente', { autoClose: 4000 });
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          toast.error('Error al eliminar producto', { autoClose: 4000 });
+        });
     }
 
     const confirEdit = (event) => {
@@ -50,8 +54,10 @@ export default function VistaAdmin() {
           toast.success('Producto editado correctamente', { autoClose: 4000 });
 
         })
-        .catch(err => console.error(err));
-        toast.error('Error al editar producto', { autoClose: 4000 });
+        .catch(err => {
+          console.error(err);
+          toast.error('Error al editar producto', { autoClose: 4000 });
+        });
     };
 
 

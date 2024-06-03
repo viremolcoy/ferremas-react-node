@@ -158,7 +158,7 @@ app.put('/editar-productos/:id', (req, res) => {
       return;
     }
 
-    // Si el producto existe, actualízalo
+    // si el producto existe se actualiza
     connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ? WHERE id = ?', [nombre, precio, stock, id], (error, results) => {
       if (error) {
         console.error('Error al actualizar el producto:', error);
@@ -168,6 +168,36 @@ app.put('/editar-productos/:id', (req, res) => {
 
       // Devuelve el producto actualizado
       res.json({ id, nombre, precio, stock });
+    });
+  });
+});
+
+
+app.delete('/eliminar-producto/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  // verifica si el producto existe
+  connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el producto:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('Producto no encontrado');
+      return;
+    }
+
+    // si existe se borra 
+    connection.query('DELETE FROM Producto WHERE id = ?', [id], (error, results) => {
+      if (error) {
+        console.error('Error al eliminar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+        return;
+      }
+
+      res.json({ message: 'Producto eliminado correctamente' });
     });
   });
 });
