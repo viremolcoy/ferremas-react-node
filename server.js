@@ -81,6 +81,8 @@ app.post('/registro-usuario', async (req, res) => {
   });
 });
 
+
+//webpay
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
 
@@ -123,6 +125,7 @@ app.get('/commit-transaccion', async (req, res) => {
     res.status(500).redirect('http://localhost:3000/errorCompra');
   }
 });
+//fin webpay
 
 // Ruta para obtener los productos de la base de datos
 app.get('/productos', (req, res) => {
@@ -133,6 +136,39 @@ app.get('/productos', (req, res) => {
       return;
     }
     res.json(results);
+  });
+});
+
+
+// ruta para editar productos
+app.put('/editar-productos/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { nombre, precio, stock } = req.body;
+
+  // verifica si el producto existe
+  connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el producto:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('Producto no encontrado');
+      return;
+    }
+
+    // Si el producto existe, actualízalo
+    connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ? WHERE id = ?', [nombre, precio, stock, id], (error, results) => {
+      if (error) {
+        console.error('Error al actualizar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+        return;
+      }
+
+      // Devuelve el producto actualizado
+      res.json({ id, nombre, precio, stock });
+    });
   });
 });
 

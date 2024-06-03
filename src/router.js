@@ -12,6 +12,7 @@ import CompraRealizada from './views/CompraRealizada.js';
 import Productosnew from './views/Productosnew.js';
 import ErrorCompra from './views/ErrorCompra.js';
 import Registro from './views/Registro.js';
+import VistaAdmin from './views/VistaAdmin.js';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
   {
     path: '/registro',
     element: <Registro />
+  },
+  {
+    path: '/vistaAdmin',
+    element: <VistaAdmin />
   },
   {
     path: '/detallecompra',
