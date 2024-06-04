@@ -18,6 +18,7 @@ export function CompraRealizada() {
         amount: params.amount,
         cardDetail: JSON.parse(params.card_detail),
         transactionDate: params.transaction_date,
+        installments_number: params.installments_number,
       });
     }, [location.search]);
 
@@ -40,6 +41,7 @@ return (
                             <p className="mt-2 font-bold">Número de Orden de Compra: <p>{datosResponse.buyOrder}</p></p>
                             <p className="mt-2"><strong>Monto de Compra:</strong> {Number(datosResponse.amount).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
                             <p className="mt-2"><strong>Tarjeta finalizada en: </strong> {datosResponse.cardDetail?.card_number}</p>
+                            <p className="mt-2"><strong>Número de cuotas: </strong> {datosResponse.installments_number}</p>
                             <p className="mt-2">
                             <strong>Fecha: </strong> 
                             {new Date(datosResponse.transactionDate).toLocaleDateString("es-ES", {

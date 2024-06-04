@@ -14,7 +14,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'nano2004',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -85,64 +85,6 @@ app.post('/registro-usuario', async (req, res) => {
 //webpay
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
-<<<<<<< HEAD
-app.post('/create', async (req, res) => {
-  const { buyOrder, sessionId, amount, returnUrl } = req.body;
-  try {
-    const tx = new WebpayPlus.Transaction();
-    const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
-    res.json({
-      url: response.url,
-      token: response.token,
-      returnUrl: response.returnUrl
-    });
-    console.log("create url: ", response.url);
-    console.log("create token: ", response.token);
-    console.log("create return: ", response.returnUrl);
-  } catch (error) {
-    console.error('Error al crear la transacción:', error);
-    res.status(500).json({ error: 'Error al crear la transacción' });
-  }
-});
-
-// Ruta para obtener las categorías de la base de datos y formatearlas como filtros
-app.get('/filters', (req, res) => {
-  connection.query('SELECT * FROM Categoria', (error, results) => {
-    if (error) {
-      console.error('Error al obtener las categorías:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
-      return;
-    }
-
-    const filters = [
-      {
-        id: 'category',
-        name: 'Category',
-        options: results.map(category => ({
-          value: category.id,
-          label: category.descripcion, // Asumiendo que tienes una columna 'descripcion' en la tabla 'Categoria'
-          checked: false // Inicialmente, ninguna categoría está seleccionada
-        }))
-      }
-    ];
-
-    res.json(filters);
-  });
-});
-
-app.post('/commit', async (req, res) => {
-  const { token } = req.body;
-  try {
-    const response = await WebpayPlus.Transaction.commit(token);
-    console.log("commit: ", response);
-    res.json(response);
-  } catch (error) {
-    console.error('Error al confirmar la transacción:', error);
-    res.status(500).json({ error: 'Error al confirmar la transacción' });
-  }
-});
-=======
->>>>>>> 5d0d487c67ad79b40d0d290dae4793e062e3e4fd
 
 app.post('/crear-transaccion', async (req, res) => {
   const { buyOrder, sessionId, amount, returnUrl } = req.body;
@@ -183,6 +125,7 @@ app.get('/commit-transaccion', async (req, res) => {
         amount: response.amount,
         card_detail: JSON.stringify(response.card_detail),
         transaction_date: response.transaction_date,
+        installments_number : response.installments_number
       }).toString();
       res.redirect(`http://localhost:3000/compraRealizada?${queryParams}`);
     } else {
