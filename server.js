@@ -14,7 +14,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'nano2004',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -26,8 +26,66 @@ connection.connect(err => {
   console.log('Conexión exitosa a la base de datos MySQL');
 });
 
+app.post('/ini-sesion', async (req, res) => {
+  const { correo, clave } = req.body;
+
+  // Buscar el usuario en la base de datos
+  const query = 'SELECT * FROM Usuario WHERE correo = ?';
+  const Usuario = await new Promise((resolve, reject) => {
+    connection.query(query, [correo], (error, results) => {
+      console.log('Usuario:', results);
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results[0]);
+      }
+    });
+  });
+
+  if (!Usuario) {
+    console.log('Usuario no encontrado');
+    return res.status(401).json({ message: 'Usuario no existe' });
+  }
+
+  // Comprobar la contraseña
+  if (clave !== Usuario.clave) {
+    return res.status(401).json({ message: 'Contraseña incorrecta' });
+  }
+
+  res.status(200).json({ message: 'Inicio de sesión exitoso' });
+});
+
+app.post('/registro-usuario', async (req, res) => {
+  const { nombre, apellido, rut, correo, clave } = req.body;
+
+  // verificar si el correo existe en la bd
+  const checkQuery = 'SELECT * FROM Usuario WHERE correo = ?';
+  connection.query(checkQuery, [correo], (error, results) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Error al verificar el correo' });
+    } else if (results.length > 0) {
+      res.status(400).json({ message: 'El correo ya está registrado' });
+    } else {
+      // si no existe el correo se inserta el nuevo usuario
+      const insertQuery = 'INSERT INTO Usuario (nombre, apellido, rut, correo, clave, Tipo_usuario_id) VALUES (?, ?, ?, ?, ?, 1)';
+      connection.query(insertQuery, [nombre, apellido, rut, correo, clave], (error, results) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({ message: 'Error al registrar el usuario' });
+        } else {
+          res.status(200).json({ message: 'Registro exitoso' });
+        }
+      });
+    }
+  });
+});
+
+
+//webpay
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
+<<<<<<< HEAD
 app.post('/create', async (req, res) => {
   const { buyOrder, sessionId, amount, returnUrl } = req.body;
   try {
@@ -83,6 +141,8 @@ app.post('/commit', async (req, res) => {
     res.status(500).json({ error: 'Error al confirmar la transacción' });
   }
 });
+=======
+>>>>>>> 5d0d487c67ad79b40d0d290dae4793e062e3e4fd
 
 app.post('/crear-transaccion', async (req, res) => {
   const { buyOrder, sessionId, amount, returnUrl } = req.body;
@@ -90,11 +150,40 @@ app.post('/crear-transaccion', async (req, res) => {
     const tx = new WebpayPlus.Transaction();
     const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
     res.json(response);
+    console.log("create url: ", response.url);
+    console.log("create token: ", response.token);
   } catch (error) {
     console.error('Error al crear la transacción:', error);
     res.status(500).json({ error: 'Error al crear la transacción' });
   }
 });
+
+app.get('/commit-transaccion', async (req, res) => {
+  const { token_ws } = req.query;
+
+  console.log('Token recibido:', token_ws);
+
+  if (!token_ws || token_ws.trim() === '') {
+    console.error('Error: token no puede ser nulo o una cadena vacía');
+    res.status(400).redirect('http://localhost:3000/errorCompra');
+    return;
+  }
+  try {
+    const tx = new WebpayPlus.Transaction();
+    const response = await tx.commit(token_ws);
+    console.log('Respuesta recibida:', response);
+    if (response.response_code === 0) {
+      res.redirect('http://localhost:3000/compraRealizada');
+    } else {
+      res.redirect('http://localhost:3000/errorCompra');
+    }
+  } catch (error) {
+    console.error('Error al confirmar la transacción:', error);
+    console.log('Error al confirmar la transacción:', error);
+    res.status(500).redirect('http://localhost:3000/errorCompra');
+  }
+});
+//fin webpay
 
 // Ruta para obtener los productos de la base de datos
 app.get('/productos', (req, res) => {
@@ -122,6 +211,69 @@ app.get('/productos', (req, res) => {
       return;
     }
     res.json(results);
+  });
+});
+
+
+// ruta para editar productos
+app.put('/editar-productos/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { nombre, precio, stock } = req.body;
+
+  // verifica si el producto existe
+  connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el producto:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('Producto no encontrado');
+      return;
+    }
+
+    // si el producto existe se actualiza
+    connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ? WHERE id = ?', [nombre, precio, stock, id], (error, results) => {
+      if (error) {
+        console.error('Error al actualizar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+        return;
+      }
+
+      // Devuelve el producto actualizado
+      res.json({ id, nombre, precio, stock });
+    });
+  });
+});
+
+
+app.delete('/eliminar-producto/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  // verifica si el producto existe
+  connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
+    if (error) {
+      console.error('Error al obtener el producto:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(404).send('Producto no encontrado');
+      return;
+    }
+
+    // si existe se borra 
+    connection.query('DELETE FROM Producto WHERE id = ?', [id], (error, results) => {
+      if (error) {
+        console.error('Error al eliminar el producto:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+        return;
+      }
+
+      res.json({ message: 'Producto eliminado correctamente' });
+    });
   });
 });
 
