@@ -38,6 +38,10 @@
   }
 }
 
+.sort-option:hover {
+  cursor: pointer;
+}
+
 
 /* Estilos en línea o en un archivo CSS externo */
 
