@@ -114,8 +114,19 @@ app.get('/commit-transaccion', async (req, res) => {
     const tx = new WebpayPlus.Transaction();
     const response = await tx.commit(token_ws);
     console.log('Respuesta recibida:', response);
+    console.log('Número órden de compra:', response.buy_order);
+    console.log('Monto de compra:', response.amount);
+    console.log('Tarjeta:', response.card_detail);
+    console.log('Fecha:', response.transaction_date);
     if (response.response_code === 0) {
-      res.redirect('http://localhost:3000/compraRealizada');
+      //poner los datos del response en la url
+      const queryParams = new URLSearchParams({
+        buy_order: response.buy_order,
+        amount: response.amount,
+        card_detail: JSON.stringify(response.card_detail),
+        transaction_date: response.transaction_date,
+      }).toString();
+      res.redirect(`http://localhost:3000/compraRealizada?${queryParams}`);
     } else {
       res.redirect('http://localhost:3000/errorCompra');
     }

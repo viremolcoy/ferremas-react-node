@@ -12,6 +12,7 @@ const navigation = [
   { name: 'Materiales básico', href: '#', current: false },
   { name: 'Herramientas manuales', href: '#', current: false },
   { name: 'Tornillos y anclajes', href: '#', current: false },
+  {name: 'Vista admin', href: '/vistaAdmin', current: false},
 ];
 
 function classNames(...classes) {
