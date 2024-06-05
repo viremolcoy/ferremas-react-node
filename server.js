@@ -15,7 +15,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'nano2004',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -320,6 +320,25 @@ app.delete('/eliminar-producto/:id', (req, res) => {
     });
   });
 });
+
+
+app.post('/agregar-producto', (req, res) => {
+  const { nombre, precio, stock, descripcion, categoria_id, marca_id } = req.body;
+
+  connection.query('INSERT INTO Producto (nombre, precio, stock, descripcion, categoria_id, marca_id) VALUES (?, ?, ?, ?, ?, ?)', [nombre, precio, stock, descripcion, categoria_id, marca_id], (error, results) => {
+    if (error) {
+      console.error('Error al crear el producto:', error);
+      res.status(500).send('Error al crear el producto');
+      return;
+    }
+
+    res.status(200).send('Producto creado');
+    console.log('Producto creado correctamente:', { id: results.insertId, nombre, precio, stock, descripcion, categoria_id, marca_id});
+  });
+});
+
+
+
 
 // Ruta para obtener los detalles de un producto por su ID
 app.get('/productos/:id', (req, res) => {

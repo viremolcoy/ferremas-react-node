@@ -158,6 +158,7 @@ export default function CarritoDesplegable({ onClose }) {
   }, []);
   
   return (
+    
     <Transition.Root show={open} as={Fragment}>
       <Dialog className="relative z-10" onClose={handleClose}>
         <Transition.Child
@@ -253,6 +254,7 @@ export default function CarritoDesplegable({ onClose }) {
                         <h3>Total: {Number(calcularPrecioTotal()).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h3>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Tus compras pueden estar sujetas a impuestos</p>
+                      <p>{globalData}aaa</p>
                       <div className="mt-6">
                         <button onClick={handlePagar}
                           type="submit"
