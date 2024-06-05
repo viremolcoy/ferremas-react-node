@@ -24,6 +24,7 @@ export default function Login() {
       // Guardar usuario en localStorage
       const usuario = response.data.usuario;
       localStorage.setItem('usuario', JSON.stringify(usuario));
+
   
       setTimeout(() => {
         navigate('/home');
