@@ -22,7 +22,7 @@ const CarouselComponent = () => {
       </Carousel.Item>
       
       <Carousel.Item>
-        <Link to="/Home">
+        <Link to="/Industriales">
         <img
           className="d-block w-100"
           src={slider2}
@@ -32,7 +32,7 @@ const CarouselComponent = () => {
       </Carousel.Item>
 
       <Carousel.Item>
-      <Link to="/Home">
+      <Link to="/Materiales">
         <img
           className="d-block w-100"
           src={slider3}

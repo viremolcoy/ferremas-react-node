@@ -20,6 +20,7 @@ import Fijaciones from './views/Fijaciones.js';
 import Medicion from './views/Medicion.js';
 import Industriales from './views/Industriales.js';
 import Nosotros from './views/Nosotros.js';
+import Compra from './views/Compra.js';
 
 const router = createBrowserRouter([
   {
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
   {
     path: '/nosotros',
     element: <Nosotros/>
+  },
+  {
+    path: '/compra',
+    element: <Compra/>
   },
 ]);
 

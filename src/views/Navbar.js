@@ -13,7 +13,7 @@ const navigation = [
   { name: 'Materiales básicos', href: '/Materiales', current: false },
   { name: 'Equipos de seguridad', href: '/Seguridad', current: false },
   { name: 'Herramientas Industriales', href: '/Industriales', current: false },
-  { name: 'Acerca de nosotros ', href: '/Nosotros', current: false },
+  { name: 'Nosotros ', href: '/Nosotros', current: false },
 ];
 
 function classNames(...classes) {
