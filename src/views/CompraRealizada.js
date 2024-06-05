@@ -28,33 +28,28 @@ return (
     <Navbar />
     <div className="bg-white rounded-lg shadow-lg">
         <div className="mx-auto max-w-2xl px-4 pt-4 pb-16 sm:px-6 sm:pt-4 lg:max-w-7xl lg:px-8">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 text-center mb-5">Compra Realizada</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 text-center mb-5 mt-5">¡Gracias por tu compra!</h1>
             <div>
                 <div className="text-center">
                     <h3 className="text-sm text-center text-gray-700 font-bold"></h3>
-                        Gracias por su compra
-                        <p className="text-sm font-medium text-gray-900 mt-2">
-                            En breve recibirá un correo con los detalles de su compra
-                        </p>
-                        <div className="mt-4">
-                            <h2 className="text-sm text-center text-gray-700 font-bold">Detalle</h2>
-                            <p className="mt-2 font-bold">Número de Orden de Compra: <p>{datosResponse.buyOrder}</p></p>
-                            <p className="mt-2"><strong>Monto de Compra:</strong> {Number(datosResponse.amount).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
-                            <p className="mt-2"><strong>Tarjeta finalizada en: </strong> {datosResponse.cardDetail?.card_number}</p>
-                            <p className="mt-2"><strong>Número de cuotas: </strong> {datosResponse.installments_number}</p>
-                            <p className="mt-2">
-                            <strong>Fecha: </strong> 
-                            {new Date(datosResponse.transactionDate).toLocaleDateString("es-ES", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric"
-                            })}
-                            </p>
+                        <p className="text-sm font-large text-gray-900 ">Compra realizada con exito.</p>
+                        <p className="text-sm font-large text-gray-900 ">En breve recibirá un correo con los detalles de su compra.</p>
+
+                        <div className="text-center max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl my-8">         
+                            <div className="p-8">
+                                <h3 className="text-gray-900 font-bold pb-3">Detalle de compra</h3>
+                                <h1 className="block mt-1 text-lg leading-tight font-light text-black p-2">Número de Orden de Compra: <spam className="font-bold">{datosResponse.buyOrder}</spam></h1>
+                                <h1 className="block mt-1 text-lg leading-tight font-light text-black p-2">Monto de Compra: <spam className="font-bold">{Number(datosResponse.amount).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</spam></h1>
+                                <h1 className="block mt-1 text-lg leading-tight font-light text-black p-2">Tarjeta finalizada en: <spam className="font-bold"> {datosResponse.cardDetail?.card_number}</spam></h1>
+                                <h1 className="block mt-1 text-lg leading-tight font-light text-black p-2">Número de cuotas: <spam className="font-bold">{datosResponse.installments_number}</spam></h1>
+                                <h1 className="block mt-1 text-lg leading-tight font-light text-black p-2">Fecha: <spam className="font-bold">{new Date(datosResponse.transactionDate).toLocaleDateString("es-ES", {year: "numeric",month: "long",day: "numeric"})}</spam></h1>
+                            </div>
                         </div>
+
                         <img className="max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mt-4 mx-auto block" src={aprobado} alt="Aprobado" />
-                        <p className="text-sm font-medium text-gray-900 mt-4">
-                            <a href="/Home" className="text-blue-500 hover:text-blue-700">Volver al inicio</a>
-                        </p>
+                        <a href="/Home" className="inline-block rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-center font-medium text-white hover:bg-indigo-700">
+                            Volver al inicio
+                        </a>
                 </div>
             </div>
         </div>
