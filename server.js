@@ -235,7 +235,7 @@ app.post('/limpiar-carrito', (req, res) => {
 app.get('/productos', (req, res) => {
   const { categorias, marcas } = req.query;
 
-  let query = 'SELECT id, nombre, precio FROM Producto WHERE 1=1';
+  let query = 'SELECT * FROM Producto WHERE 1=1';
   let queryParams = [];
 
   if (categorias) {

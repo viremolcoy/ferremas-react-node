@@ -1,15 +1,18 @@
 import { Fragment, useState, useEffect} from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, BellIcon, XMarkIcon, ShoppingCartIcon} from '@heroicons/react/24/outline';
 import logo from '../assets/img/logo.png';
 import dualipa from '../assets/img/dualipa.jpg';
-import Home from './Home';
+import user from '../assets/img/user.png';
 import CarritoDesplegable from './CarritoDesplegable';
 
 const navigation = [
   { name: 'Inicio', href: '/Home', current: false },
   { name: 'Productos', href: '/Productos', current: false },
-  {name: 'Vista admin', href: '/vistaAdmin', current: false},
+  { name: 'Herramientas manuales', href: '/Herramientas', current: false },
+  { name: 'Materiales básicos', href: '/Materiales', current: false },
+  { name: 'Equipos de seguridad', href: '/Seguridad', current: false },
+  { name: 'Herramientas Industriales', href: '/Industriales', current: false },
 ];
 
 function classNames(...classes) {
@@ -18,7 +21,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [carritoVisible, setCarritoVisible] = useState(false);
-  const [usuario, setUsuario] = useState(null); // Estado para almacenar el nombre y apellido del usuario
+  const [usuario, setUsuario] = useState(true); // Estado para almacenar el nombre y apellido del usuario
 
   useEffect(() => {
     // Obtener el nombre y apellido del usuario del localStorage
@@ -75,24 +78,28 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <h1 className="text-white text-sm font-semibold">{usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}</h1>
-                <button
-                  type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                >
+              
+                <button type="button" onClick={() => setCarritoVisible(true)} className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Ver notificaciones</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <ShoppingCartIcon className="h-7 w-7" aria-hidden="true" />
                 </button>
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
-                    <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">Abrir usuario</span>
-                      <img className="h-8 w-8 rounded-full" src={dualipa} alt="Dua Lipa" />
-                    </Menu.Button>
+                      {usuario ? (null) : ( // Si no hay un usuario autenticado, mostrar el icono de perfil
+                        <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                          <span className="absolute -inset-1.5" />
+                          <img className="h-8 w-8 rounded-full" src={user} alt="Dua Lipa" />
+                        </Menu.Button>
+                      )}  
+                      {usuario ? ( // Si hay un usuario autenticado, mostrar la foto de perfil del usuario            
+                        <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                          <span className="absolute -inset-1.5" />
+                          <img className="h-8 w-8 rounded-full" src={dualipa} alt="Dua Lipa" />
+                        </Menu.Button>
+                      ) : ( null )}                  
                   </div>
                   <Transition
                     as={Fragment}
@@ -104,49 +111,33 @@ export default function Navbar() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                            onClick={() => setCarritoVisible(true)}
-                          >
-                            Carrito
-                          </a>
-                        )}
-                      </Menu.Item>
-                      {usuario ? (
-                        // Si hay un usuario autenticado, no mostrar el botón de "Iniciar sesión"
-                        null
-                      ) : (
-                        // Si no hay un usuario autenticado, mostrar el botón de "Iniciar sesión"
+                      {usuario ? (null) : ( // Si no hay un usuario autenticado, mostrar el botón de "Iniciar sesión"
                         <Menu.Item>
                           {({ active }) => (
-                            <a
-                              href="/Login"
-                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                            >
+                            <a href="/Login" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')} >
                               Iniciar sesión
                             </a>
                           )}
                         </Menu.Item>
                       )}
-                                            {usuario ? (
-                        // Si hay un usuario autenticado, no mostrar el botón de "Iniciar sesión"
+                      {usuario ? ( // Si hay un usuario autenticado, mostrar el botón de "Administración productos"             
                         <Menu.Item>
                         {({ active }) => (
-                          <a
-                            href="/Home"
-                            onClick={handleLogout}
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
+                          <a href="/vistaAdmin" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+                            Administración productos
+                          </a>
+                        )}
+                      </Menu.Item>
+                      ) : ( null )}
+                      {usuario ? ( // Si hay un usuario autenticado, mostrar el botón de "Cerrar sesión"             
+                        <Menu.Item>
+                        {({ active }) => (
+                          <a href="/Home" onClick={handleLogout} className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                             Cerrar sesión
                           </a>
                         )}
                       </Menu.Item>
-                      ) : (
-                        null
-                                            )}
+                      ) : ( null )}                      
                     </Menu.Items>
                   </Transition>
                 </Menu>

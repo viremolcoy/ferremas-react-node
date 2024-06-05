@@ -19,8 +19,7 @@ export default function Home() {
         <div>   
             <Navbar />  
 
-            <Productosnew />
-  
+            <Productosnew />  
 
             <Footer />
             

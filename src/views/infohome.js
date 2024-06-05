@@ -5,11 +5,10 @@ return (
       <div className="relative mx-auto max-w-7xl px-4 sm:static sm:px-6 lg:px-8">
         <div className="sm:max-w-lg">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Comenzo el cyber en FERREMAS!
+            ¡Comenzó el cyber en FERREMAS!
           </h1>
           <p className="mt-4 text-xl text-gray-500">
-            Aprovecha y no te quedes fuera de las increibles ofertas que tenemos para ti. <br></br>
-            Disponible desde el 3 al 5 de junio 
+            Aprovecha y no te quedes fuera de las increibles ofertas que tenemos para ti. Disponible desde el 3 al 5 de junio 
           </p>
         </div>
         <div>
@@ -24,37 +23,14 @@ return (
                   <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                     <div className="h-64 w-44 overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100">
                       <img
-                        src="../imagenes/1.jpeg"
+                        src="../imagenes/17.jpeg"
                         alt=""
                         className="h-full w-full object-cover object-center"
                       />
                     </div>
                     <div className="h-64 w-44 overflow-hidden rounded-lg">
                       <img
-                        src="../imagenes/30.jpeg"
-                        alt=""
-                        className="h-full w-full object-cover object-center"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
-                    <div className="h-64 w-44 overflow-hidden rounded-lg">
-                      <img
-                        src="../imagenes/2.jpeg"
-                        alt=""
-                        className="h-full w-full object-cover object-center"
-                      />
-                    </div>
-                    <div className="h-64 w-44 overflow-hidden rounded-lg">
-                      <img
-                        src="../imagenes/3.jpeg"
-                        alt=""
-                        className="h-full w-full object-cover object-center"
-                      />
-                    </div>
-                    <div className="h-64 w-44 overflow-hidden rounded-lg">
-                      <img
-                        src="../imagenes/22.jpeg"
+                        src="../imagenes/79.jpeg"
                         alt=""
                         className="h-full w-full object-cover object-center"
                       />
@@ -63,14 +39,37 @@ return (
                   <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                     <div className="h-64 w-44 overflow-hidden rounded-lg">
                       <img
-                        src="../imagenes/55.jpeg"
+                        src="../imagenes/52.jpeg"
                         alt=""
                         className="h-full w-full object-cover object-center"
                       />
                     </div>
                     <div className="h-64 w-44 overflow-hidden rounded-lg">
                       <img
-                        src="../imagenes/9.jpeg"
+                        src="../imagenes/82.jpeg"
+                        alt=""
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </div>
+                    <div className="h-64 w-44 overflow-hidden rounded-lg">
+                      <img
+                        src="../imagenes/19.jpeg"
+                        alt=""
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                    <div className="h-64 w-44 overflow-hidden rounded-lg">
+                      <img
+                        src="../imagenes/59.jpeg"
+                        alt=""
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </div>
+                    <div className="h-64 w-44 overflow-hidden rounded-lg">
+                      <img
+                        src="../imagenes/37.jpeg"
                         alt=""
                         className="h-full w-full object-cover object-center"
                       />

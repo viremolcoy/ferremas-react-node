@@ -24,13 +24,14 @@ export default function Home() {
             <Navbar />  
 
             <CarouselComponent />
-           <Infohome />
-           <Porqueferremas />
-           <Separtedeferremas />
 
+            <Infohome />
 
-            <Footer />
-            
+            <Porqueferremas />
+
+            <Separtedeferremas />
+
+            <Footer />            
         </div>
     );
 }

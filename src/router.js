@@ -1,11 +1,10 @@
 import { createBrowserRouter } from 'react-router-dom';
+import Home from './views/Home';
 import Login from './views/Login';
 import NotFound from './views/NotFound';
-import Home from './views/Home';
+import Productos from './views/Productos'; 
 import ProductosCat from './views/ProductosCat';
 import SeleccionProducto from './views/SeleccionProducto';
-import Productos from './views/Productos'; // Asegúrate de que la ruta a Productos es correcta
-import App from './App.js';
 import CarritoDesplegable from './views/CarritoDesplegable.js';
 import DetalleCompra from './views/DetalleCompra.js';
 import CompraRealizada from './views/CompraRealizada.js';
@@ -13,6 +12,13 @@ import Productosnew from './views/Productosnew.js';
 import ErrorCompra from './views/ErrorCompra.js';
 import Registro from './views/Registro.js';
 import VistaAdmin from './views/VistaAdmin.js';
+import Herramientas from './views/Herramientas.js';
+import Materiales from './views/Materiales.js';
+import Seguridad from './views/Seguridad.js';
+import Tornillos from './views/Tornillos.js';
+import Fijaciones from './views/Fijaciones.js';
+import Medicion from './views/Medicion.js';
+import Industriales from './views/Industriales.js';
 
 const router = createBrowserRouter([
   {
@@ -70,6 +76,34 @@ const router = createBrowserRouter([
   {
     path: '*',
     element: <NotFound />
+  },
+  {
+    path: '/herramientas',
+    element: <Herramientas />
+  },
+  {
+    path: '/materiales',
+    element: <Materiales  />
+  },
+  {
+    path: '/seguridad',
+    element: <Seguridad />
+  },
+  {
+    path: '/tornillos',
+    element: <Tornillos  />
+  },
+  {
+    path: '/medicion',
+    element: <Medicion  />
+  },
+  {
+    path: '/Fijaciones',
+    element: <Fijaciones/>
+  },
+  {
+    path: '/industriales',
+    element: <Industriales />
   },
 ]);
 
