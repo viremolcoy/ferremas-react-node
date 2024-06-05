@@ -357,7 +357,7 @@ app.post('/agregar-producto', upload.single('imagen'), (req, res) => {
       }
 
       const productoId = results.insertId;
-      const imagenFinal = `${productoId}${path.extname(imagenTemp)}`;
+      const imagenFinal = `${productoId}.jpeg`; // Forzar la extensión a .jpeg
       const imagenRuta = path.join(__dirname, 'public/imagenes', imagenFinal);
 
       // Renombrar la imagen temporal

@@ -17,6 +17,26 @@ export default function VistaAdmin() {
     const [categoriaId, setCategoriaId] = useState(0);
     const [marcaId, setMarcaId] = useState(0);
     const [imagen, setImagen] = useState(null);
+    const [categorias, setCategorias] = useState([]);
+    const [marcas, setMarcas] = useState([]);
+ 
+    useEffect(() => {
+        axios.get('http://localhost:3307/categorias')
+            .then(response => {
+                setCategorias(response.data);
+            })
+            .catch(error => {
+                console.error("Hubo un error al obtener las categorías", error);
+            });
+
+        axios.get('http://localhost:3307/marcas')
+            .then(response => {
+                setMarcas(response.data);
+            })
+            .catch(error => {
+                console.error("Hubo un error al obtener las marcas", error);
+            });
+    }, []);
 
     useEffect(() => {
       axios.get('http://localhost:3307/productos')
@@ -238,13 +258,23 @@ export default function VistaAdmin() {
                 <input type="text" value={descripcion} onChange={e => setDescripcion(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
               </label>
               <label className="block">
-                Categoria ID:
-                <input type="number" value={categoriaId} onChange={e => setCategoriaId(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
-              </label>
-              <label className="block">
-                Marca ID:
-                <input type="number" value={marcaId} onChange={e => setMarcaId(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
-              </label>
+                Categoría:
+                <select value={categoriaId} onChange={e => setCategoriaId(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm">
+                    <option value="">Selecciona una categoría</option>
+                    {categorias.map(categoria => (
+                        <option key={categoria.id} value={categoria.id}>{categoria.descripcion}</option>
+                    ))}
+                </select>
+            </label>
+            <label className="block">
+                Marca:
+                <select value={marcaId} onChange={e => setMarcaId(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm">
+                    <option value="">Selecciona una marca</option>
+                    {marcas.map(marca => (
+                        <option key={marca.id} value={marca.id}>{marca.descripcion}</option>
+                    ))}
+                </select>
+            </label>
               <div className="col-span-full">
               <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
                 Imagen del producto
