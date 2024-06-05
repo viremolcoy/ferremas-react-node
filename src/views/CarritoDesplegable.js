@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 export default function CarritoDesplegable({ onClose }) {
   const [open, setOpen] = useState(true);
@@ -23,12 +23,14 @@ export default function CarritoDesplegable({ onClose }) {
 
   useEffect(() => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
+    let carritoGuardado = [];
     if (usuario) {
-      const carritoGuardado = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
-      setCarrito(carritoGuardado);
+      carritoGuardado = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
+    } else {
+      carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
     }
+    setCarrito(carritoGuardado);
   }, []);
-  
 
   const guardarCarritoEnLocalStorage = (carrito) => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -40,35 +42,32 @@ export default function CarritoDesplegable({ onClose }) {
     }
   };
 
-
   const agregarAlCarrito = (producto) => {
     console.log('Agregando al carrito:', producto); // Agregar este console.log
     if (!producto) return;
-    
+
     const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario) {
-      // Si no hay usuario autenticado, no hacemos nada
-      return;
-    }
-    
-    let carritoUsuario = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
-    
-    const index = carritoUsuario.findIndex((item) => item.id === producto.id);
-    if (index !== -1) {
-      const nuevoCarrito = [...carritoUsuario];
-      nuevoCarrito[index].cantidad += 1;
-      carritoUsuario = nuevoCarrito;
+    let carritoActual = [];
+    if (usuario) {
+      carritoActual = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
     } else {
-      carritoUsuario.push({ ...producto, cantidad: 1 });
+      carritoActual = JSON.parse(localStorage.getItem('carrito')) || [];
     }
-    
-    guardarCarritoEnLocalStorage(carritoUsuario);
-    setCarrito(carritoUsuario);
+
+    const index = carritoActual.findIndex((item) => item.id === producto.id);
+    if (index !== -1) {
+      const nuevoCarrito = [...carritoActual];
+      nuevoCarrito[index].cantidad += 1;
+      carritoActual = nuevoCarrito;
+    } else {
+      carritoActual.push({ ...producto, cantidad: 1 });
+    }
+
+    guardarCarritoEnLocalStorage(carritoActual);
+    setCarrito(carritoActual);
   };
-  
-  
+
   const eliminarDelCarrito = (id) => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
     const nuevoCarrito = carrito.filter((item) => item.id !== id);
     guardarCarritoEnLocalStorage(nuevoCarrito);
     setCarrito(nuevoCarrito);
@@ -146,7 +145,11 @@ export default function CarritoDesplegable({ onClose }) {
 
   const limpiarCarrito = () => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
-    localStorage.removeItem('carrito_' + usuario.id);
+    if (usuario) {
+      localStorage.removeItem('carrito_' + usuario.id);
+    } else {
+      localStorage.removeItem('carrito');
+    }
     setCarrito([]);
   };
 
@@ -156,9 +159,8 @@ export default function CarritoDesplegable({ onClose }) {
       limpiarCarrito();
     }
   }, []);
-  
+
   return (
-    
     <Transition.Root show={open} as={Fragment}>
       <Dialog className="relative z-10" onClose={handleClose}>
         <Transition.Child
