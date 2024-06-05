@@ -16,12 +16,17 @@ export default function VistaAdmin() {
     const [descripcion, setDescripcion] = useState('');
     const [categoriaId, setCategoriaId] = useState(0);
     const [marcaId, setMarcaId] = useState(0);
+    const [imagen, setImagen] = useState(null);
 
     useEffect(() => {
       axios.get('http://localhost:3307/productos')
         .then(res => setProductos(res.data))
         .catch(err => console.error(err));
     }, []);
+
+    function pesoChileno(value) {
+      return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
+    }
 
     function editarProducto(id) {
       const producto = productos.find(producto => producto.id === id);
@@ -74,27 +79,39 @@ export default function VistaAdmin() {
     const agregarProduc = (event) => {
       event.preventDefault();
     
-      axios.post('http://localhost:3307/agregar-producto', {
-        nombre: nombre,
-        precio: precio,
-        stock: stock,
-        descripcion: descripcion,
-        categoria_id: categoriaId,
-        marca_id: marcaId,
-      })
-      .then(res => {
-        // actualiza los productos después de agregar
-        axios.get('http://localhost:3307/productos')
-          .then(res => setProductos(res.data))
-          .catch(err => console.error(err));
-        toast.success('Producto agregao correctamente mano', { autoClose: 4000 });
-        setIsEditModalOpen(false);
-      })
-      .catch(err => {
-        console.error(err);
-        toast.error('Error al crear producto', { autoClose: 4000 });
-      });
+      const formData = new FormData();
+      formData.append('nombre', nombre);
+      formData.append('precio', precio);
+      formData.append('stock', stock);
+      formData.append('descripcion', descripcion);
+      formData.append('categoria_id', categoriaId);
+      formData.append('marca_id', marcaId);
+      const imagenFile = document.querySelector('input[type="file"]').files[0];
+      formData.append('imagen', imagenFile);
+    
+    
+      axios.post('http://localhost:3307/agregar-producto', formData)
+        .then(res => {
+          // actualiza los productos después de agregar
+          axios.get('http://localhost:3307/productos')
+            .then(res => setProductos(res.data))
+            .catch(err => console.error(err));
+          toast.success('Producto agregado correctamente', { autoClose: 4000 });
+          setIsEditModalOpen(false);
+        })
+        .catch(err => {
+          console.error(err);
+          toast.error('Error al crear producto', { autoClose: 4000 });
+        });
     };
+
+    const handleImageChange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        setImagen(URL.createObjectURL(file));
+      }
+    };
+
 
 
 
@@ -203,7 +220,7 @@ export default function VistaAdmin() {
           <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <h2 className="text-lg leading-6 font-medium text-gray-900">Editar Producto</h2>
-              <form onSubmit={agregarProduc} className="space-y-4">
+              <form onSubmit={agregarProduc} className="space-y-4" encType="multipart/form-data" >
               <label className="block">
                 Nombre del producto:
                 <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
@@ -234,16 +251,14 @@ export default function VistaAdmin() {
               </label>
               <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <div className="text-center">
+                {imagen && <img src={imagen} alt="Imagen seleccionada" className="mx-auto h-auto w-auto" />}
                   <p className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
                   <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
-                    >
+                    <label htmlFor="file-upload"
+                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                       <span>Seleccione una imagen</span>
-                      <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                      <input type="file" name="imagen" onChange={handleImageChange} />
                     </label>
-                    <p className="pl-1">ó arrastre aquí</p>
                   </div>
                   <p className="text-xs leading-5 text-gray-600">PNG, JPG max 10MB</p>
                 </div>

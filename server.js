@@ -4,7 +4,9 @@ const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const { WebpayPlus, Options, IntegrationCommerceCodes, IntegrationApiKeys, Environment } = require('transbank-sdk');
 const session = require('express-session');
-
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -321,20 +323,56 @@ app.delete('/eliminar-producto/:id', (req, res) => {
   });
 });
 
+// para subir imágenes y wardarlas en la carpeta
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/imagenes')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+  }
+})
 
-app.post('/agregar-producto', (req, res) => {
+app.use('/imagenes', express.static(path.join(__dirname, 'public/imagenes')));
+const upload = multer({ storage: storage })
+
+
+app.post('/agregar-producto', upload.single('imagen'), (req, res) => {
   const { nombre, precio, stock, descripcion, categoria_id, marca_id } = req.body;
+  if (!req.file) {
+    console.error('No se subió ningún archivo');
+    res.status(400).send('No se subió ningún archivo');
+    return;
+  }
+  const imagenTemp = req.file.filename;
 
-  connection.query('INSERT INTO Producto (nombre, precio, stock, descripcion, categoria_id, marca_id) VALUES (?, ?, ?, ?, ?, ?)', [nombre, precio, stock, descripcion, categoria_id, marca_id], (error, results) => {
-    if (error) {
-      console.error('Error al crear el producto:', error);
-      res.status(500).send('Error al crear el producto');
-      return;
+  connection.query(
+    'INSERT INTO Producto (nombre, precio, stock, descripcion, categoria_id, marca_id) VALUES (?, ?, ?, ?, ?, ?)', 
+    [nombre, precio, stock, descripcion, categoria_id, marca_id], 
+    (error, results) => {
+      if (error) {
+        console.error('Error al crear el producto:', error);
+        res.status(500).send('Error al crear el producto');
+        return;
+      }
+
+      const productoId = results.insertId;
+      const imagenFinal = `${productoId}${path.extname(imagenTemp)}`;
+      const imagenRuta = path.join(__dirname, 'public/imagenes', imagenFinal);
+
+      // Renombrar la imagen temporal
+      fs.rename(path.join(__dirname, 'public/imagenes', imagenTemp), imagenRuta, (err) => {
+        if (err) {
+          console.error('Error al renombrar la imagen:', err);
+          res.status(500).send('Error al renombrar la imagen');
+          return;
+        }
+
+        res.status(200).json({ message: 'Producto creado', id: productoId });
+        console.log('Producto creado correctamente:', { id: productoId, nombre, precio, stock, descripcion, categoria_id, marca_id });
+      });
     }
-
-    res.status(200).send('Producto creado');
-    console.log('Producto creado correctamente:', { id: results.insertId, nombre, precio, stock, descripcion, categoria_id, marca_id});
-  });
+  );
 });
 
 
