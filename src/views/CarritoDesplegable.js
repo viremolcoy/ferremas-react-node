@@ -91,12 +91,11 @@ export default function CarritoDesplegable({ onClose }) {
     setOpen(false);
     onClose();
   };
-
   const handlePagar = async () => {
     const buyOrder = `O-${Date.now()}`;
     const sessionId = `S-${Date.now()}`;
     const amount = calcularPrecioTotal();
-    const returnUrl = 'http://localhost:3307/commit-transaccion'; // URL donde se redirigirá después del pago
+    const returnUrl = 'http://localhost:3307/commit-transaccion';
   
     try {
       const response = await axios.post('http://localhost:3307/crear-transaccion', {
@@ -124,6 +123,21 @@ export default function CarritoDesplegable({ onClose }) {
       console.error('Error al crear la transacción:', error);
     }
   };
+  
+  // Nueva función para limpiar el carrito
+  const limpiarCarrito = () => {
+    setCarrito([]);
+    localStorage.removeItem('carrito');
+  };
+  
+  // Modificar useEffect para vaciar el carrito después de redirigir a la página de confirmación de compra
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('compraRealizada') === 'true') {
+      limpiarCarrito();
+    }
+  }, []);
+  
 
   return (
     <Transition.Root show={open} as={Fragment}>

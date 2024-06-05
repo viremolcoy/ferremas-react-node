@@ -3,6 +3,7 @@ const cors = require('cors');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const { WebpayPlus, Options, IntegrationCommerceCodes, IntegrationApiKeys, Environment } = require('transbank-sdk');
+const session = require('express-session');
 
 const app = express();
 
@@ -17,6 +18,14 @@ const connection = mysql.createConnection({
   password: 'nano2004',
   database: 'ferremas'
 });
+
+// Configuración de sesiones
+app.use(session({
+  secret: 'ferre', // Cambia esto a un secreto seguro
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Debes cambiar a true si usas HTTPS
+}));
 
 connection.connect(err => {
   if (err) {
@@ -33,7 +42,6 @@ app.post('/ini-sesion', async (req, res) => {
   const query = 'SELECT * FROM Usuario WHERE correo = ?';
   const Usuario = await new Promise((resolve, reject) => {
     connection.query(query, [correo], (error, results) => {
-      console.log('Usuario:', results);
       if (error) {
         reject(error);
       } else {
@@ -43,7 +51,6 @@ app.post('/ini-sesion', async (req, res) => {
   });
 
   if (!Usuario) {
-    console.log('Usuario no encontrado');
     return res.status(401).json({ message: 'Usuario no existe' });
   }
 
@@ -52,8 +59,29 @@ app.post('/ini-sesion', async (req, res) => {
     return res.status(401).json({ message: 'Contraseña incorrecta' });
   }
 
-  res.status(200).json({ message: 'Inicio de sesión exitoso' });
+  // Guardar el usuario en la sesión
+  req.session.user = {
+    id: Usuario.id,
+    nombre: Usuario.nombre,
+    apellido: Usuario.apellido,
+    correo: Usuario.correo // Agregar el correo del usuario
+  };
+
+  res.status(200).json({ message: 'Inicio de sesión exitoso',
+  usuario: req.session.user // Enviar los datos del usuari
+   });
 });
+
+// Agregar la ruta para cerrar sesión
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Error al cerrar sesión' });
+    }
+    res.status(200).json({ message: 'Sesión cerrada exitosamente' });
+  });
+});
+
 
 app.post('/registro-usuario', async (req, res) => {
   const { nombre, apellido, rut, correo, clave } = req.body;
@@ -180,7 +208,8 @@ app.get('/commit-transaccion', async (req, res) => {
         amount: response.amount,
         card_detail: JSON.stringify(response.card_detail),
         transaction_date: response.transaction_date,
-        installments_number : response.installments_number
+        installments_number : response.installments_number,
+        compraRealizada: 'true' // Añadir este parámetro
       }).toString();
       res.redirect(`http://localhost:3000/compraRealizada?${queryParams}`);
     } else {
@@ -193,6 +222,12 @@ app.get('/commit-transaccion', async (req, res) => {
   }
 });
 //fin webpay
+
+app.post('/limpiar-carrito', (req, res) => {
+  // Este endpoint puede ser solo un placeholder ya que el carrito se maneja en el frontend
+  res.status(200).json({ message: 'Carrito limpio' });
+});
+
 
 // Ruta para obtener los productos de la base de datos
 app.get('/productos', (req, res) => {

@@ -15,20 +15,20 @@ export default function Login() {
     event.preventDefault();
     const correo = event.target.email.value;
     const clave = event.target.password.value;
-    console.log(correo, clave)
     
     try {
-
-      const response = await axios.post('http://localhost:3307/ini-sesion', { correo, clave});
-      console.log(response.data.message);
+      const response = await axios.post('http://localhost:3307/ini-sesion', { correo, clave });
       setErrorMensaje(null);
-      setInicioMensaje('Inicio de sesión exitoso');
-
+      setInicioMensaje(response.data.message); 
+  
+      // Guardar usuario en localStorage
+      const usuario = response.data.usuario;
+      localStorage.setItem('usuario', JSON.stringify(usuario));
+  
       setTimeout(() => {
         navigate('/home');
       }, 2000);
     } catch (error) {
-      console.error('Error al iniciar sesión:', error.response.data.message);
       setErrorMensaje(error.response.data.message);
     }
   };

@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect} from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/img/logo.png';
@@ -21,6 +21,21 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [carritoVisible, setCarritoVisible] = useState(false);
+  const [usuario, setUsuario] = useState(null); // Estado para almacenar el nombre y apellido del usuario
+
+  useEffect(() => {
+    // Obtener el nombre y apellido del usuario del localStorage
+    const usuarioStorage = localStorage.getItem('usuario');
+    if (usuarioStorage) {
+      setUsuario(JSON.parse(usuarioStorage));
+    }
+  }, []); // Ejecutar solo una vez al cargar el componente
+
+
+  const handleLogout = () => {
+    localStorage.removeItem('usuario'); // Eliminar usuario del localStorage
+    // Redirigir a la página de inicio de sesión
+  };
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -63,6 +78,7 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <h5 style={{ color: 'white' }}>{usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}</h5>
                 <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -102,20 +118,27 @@ export default function Navbar() {
                           </a>
                         )}
                       </Menu.Item>
+                      {usuario ? (
+                        // Si hay un usuario autenticado, no mostrar el botón de "Iniciar sesión"
+                        null
+                      ) : (
+                        // Si no hay un usuario autenticado, mostrar el botón de "Iniciar sesión"
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="/Login"
+                              className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
+                            >
+                              Iniciar sesión
+                            </a>
+                          )}
+                        </Menu.Item>
+                      )}
                       <Menu.Item>
                         {({ active }) => (
                           <a
-                            href="/Login"
-                            className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
-                          >
-                            Iniciar sesión
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <a
-                            href="#"
+                            href="/Home"
+                            onClick={handleLogout}
                             className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}
                           >
                             Cerrar sesión
