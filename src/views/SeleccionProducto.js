@@ -23,28 +23,47 @@ function SeleccionProducto() {
   }, [id]);
 
   useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
-    if (carritoGuardado) {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      const carritoGuardado = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
       setCarrito(carritoGuardado);
     }
   }, []);
 
 
   const guardarCarritoEnLocalStorage = (carrito) => {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      localStorage.setItem('carrito_' + usuario.id, JSON.stringify(carrito));
+    } else {
+      // Si no hay usuario autenticado, almacenar en un carrito global
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+    }
   };
 
   const agregarAlCarrito = (producto) => {
-    const index = carrito.findIndex((item) => item.id === producto.id);
-    if (index !== -1) {
-      const nuevoCarrito = [...carrito];
-      nuevoCarrito[index].cantidad += 1;
-      setCarrito(nuevoCarrito);
-      guardarCarritoEnLocalStorage(nuevoCarrito);
-    } else {
-      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
-      guardarCarritoEnLocalStorage([...carrito, { ...producto, cantidad: 1 }]);
+    console.log('Agregando al carrito:', producto); // Agregar este console.log
+    if (!producto) return;
+    
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) {
+      // Si no hay usuario autenticado, no hacemos nada
+      return;
     }
+    
+    let carritoUsuario = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
+    
+    const index = carritoUsuario.findIndex((item) => item.id === producto.id);
+    if (index !== -1) {
+      const nuevoCarrito = [...carritoUsuario];
+      nuevoCarrito[index].cantidad += 1;
+      carritoUsuario = nuevoCarrito;
+    } else {
+      carritoUsuario.push({ ...producto, cantidad: 1 });
+    }
+    
+    guardarCarritoEnLocalStorage(carritoUsuario);
+    setCarrito(carritoUsuario);
   };
 
 

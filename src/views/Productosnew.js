@@ -46,6 +46,7 @@ export default function Example() {
     axios.get('http://localhost:3307/productos')
       .then(response => {
         setProductos(response.data);
+        
       })
       .catch(error => {
         console.error('Error al obtener los productos:', error);
@@ -201,7 +202,7 @@ export default function Example() {
       sortProducts(sortBy);
     }
   }, [sortBy]);
-  
+
 
   const generarRutaImagen = (idProducto) => process.env.PUBLIC_URL + '/imagenes/' + idProducto + '.jpeg';
 

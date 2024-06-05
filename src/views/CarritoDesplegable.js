@@ -2,8 +2,7 @@ import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { useParams, useNavigate} from 'react-router-dom';
-
+import { useParams, useNavigate } from 'react-router-dom';
 
 export default function CarritoDesplegable({ onClose }) {
   const [open, setOpen] = useState(true);
@@ -23,34 +22,56 @@ export default function CarritoDesplegable({ onClose }) {
   }, [id]);
 
   useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
-    if (carritoGuardado) {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      const carritoGuardado = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
       setCarrito(carritoGuardado);
     }
   }, []);
+  
 
   const guardarCarritoEnLocalStorage = (carrito) => {
-    localStorage.setItem('carrito', JSON.stringify(carrito));
-  };
-
-  const agregarAlCarrito = (producto) => {
-    if (!producto) return;
-    const index = carrito.findIndex((item) => item.id === producto.id);
-    if (index !== -1) {
-      const nuevoCarrito = [...carrito];
-      nuevoCarrito[index].cantidad += 1;
-      setCarrito(nuevoCarrito);
-      guardarCarritoEnLocalStorage(nuevoCarrito);
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario) {
+      localStorage.setItem('carrito_' + usuario.id, JSON.stringify(carrito));
     } else {
-      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
-      guardarCarritoEnLocalStorage([...carrito, { ...producto, cantidad: 1 }]);
+      // Si no hay usuario autenticado, almacenar en un carrito global
+      localStorage.setItem('carrito', JSON.stringify(carrito));
     }
   };
 
+
+  const agregarAlCarrito = (producto) => {
+    console.log('Agregando al carrito:', producto); // Agregar este console.log
+    if (!producto) return;
+    
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (!usuario) {
+      // Si no hay usuario autenticado, no hacemos nada
+      return;
+    }
+    
+    let carritoUsuario = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
+    
+    const index = carritoUsuario.findIndex((item) => item.id === producto.id);
+    if (index !== -1) {
+      const nuevoCarrito = [...carritoUsuario];
+      nuevoCarrito[index].cantidad += 1;
+      carritoUsuario = nuevoCarrito;
+    } else {
+      carritoUsuario.push({ ...producto, cantidad: 1 });
+    }
+    
+    guardarCarritoEnLocalStorage(carritoUsuario);
+    setCarrito(carritoUsuario);
+  };
+  
+  
   const eliminarDelCarrito = (id) => {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
     const nuevoCarrito = carrito.filter((item) => item.id !== id);
-    setCarrito(nuevoCarrito);
     guardarCarritoEnLocalStorage(nuevoCarrito);
+    setCarrito(nuevoCarrito);
   };
 
   const incrementarCantidad = (id) => {
@@ -61,8 +82,8 @@ export default function CarritoDesplegable({ onClose }) {
       }
       return item;
     });
-    setCarrito(nuevoCarrito);
     guardarCarritoEnLocalStorage(nuevoCarrito);
+    setCarrito(nuevoCarrito);
   };
 
   const decrementarCantidad = (id) => {
@@ -73,8 +94,8 @@ export default function CarritoDesplegable({ onClose }) {
       }
       return item;
     });
-    setCarrito(nuevoCarrito);
     guardarCarritoEnLocalStorage(nuevoCarrito);
+    setCarrito(nuevoCarrito);
   };
 
   const calcularPrecioTotal = () => {
@@ -85,18 +106,17 @@ export default function CarritoDesplegable({ onClose }) {
     return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
   };
 
-  const [url, setUrl] = useState('');
-
   const handleClose = () => {
     setOpen(false);
     onClose();
   };
+
   const handlePagar = async () => {
     const buyOrder = `O-${Date.now()}`;
     const sessionId = `S-${Date.now()}`;
     const amount = calcularPrecioTotal();
     const returnUrl = 'http://localhost:3307/commit-transaccion';
-  
+
     try {
       const response = await axios.post('http://localhost:3307/crear-transaccion', {
         buyOrder,
@@ -104,33 +124,32 @@ export default function CarritoDesplegable({ onClose }) {
         amount,
         returnUrl
       });
-  
+
       const { token, url } = response.data;
       const form = document.createElement('form');
       form.action = url;
       form.method = 'POST';
-  
+
       const tokenInput = document.createElement('input');
       tokenInput.type = 'hidden';
       tokenInput.name = 'token_ws';
       tokenInput.value = token;
       form.appendChild(tokenInput);
       console.log('Token:', token);
-  
+
       document.body.appendChild(form);
       form.submit();
     } catch (error) {
       console.error('Error al crear la transacción:', error);
     }
   };
-  
-  // Nueva función para limpiar el carrito
+
   const limpiarCarrito = () => {
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    localStorage.removeItem('carrito_' + usuario.id);
     setCarrito([]);
-    localStorage.removeItem('carrito');
   };
-  
-  // Modificar useEffect para vaciar el carrito después de redirigir a la página de confirmación de compra
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('compraRealizada') === 'true') {
@@ -138,7 +157,6 @@ export default function CarritoDesplegable({ onClose }) {
     }
   }, []);
   
-
   return (
     
     <Transition.Root show={open} as={Fragment}>

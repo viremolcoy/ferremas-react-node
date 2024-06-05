@@ -18,6 +18,7 @@
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
     "express-session": "^1.18.0",
+    "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "mysql2": "^3.9.7",
     "query-string": "^9.0.0",
