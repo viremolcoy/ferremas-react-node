@@ -78,7 +78,7 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <h5 style={{ color: 'white' }}>{usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}</h5>
+              <h1 className="text-white text-sm font-semibold">{usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}</h1>
                 <button
                   type="button"
                   className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"

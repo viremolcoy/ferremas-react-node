@@ -9,6 +9,13 @@ export default function VistaAdmin() {
     const [productos, setProductos] = useState([]);
     const [editProduc, setEditProduc] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [nombre, setNombre] = useState('');
+    const [precio, setPrecio] = useState(0);
+    const [stock, setStock] = useState(0);
+    const [descripcion, setDescripcion] = useState('');
+    const [categoriaId, setCategoriaId] = useState(0);
+    const [marcaId, setMarcaId] = useState(0);
 
     useEffect(() => {
       axios.get('http://localhost:3307/productos')
@@ -60,6 +67,36 @@ export default function VistaAdmin() {
         });
     };
 
+    const agregarBtn = () => {
+      setIsEditModalOpen(true);
+    };
+
+    const agregarProduc = (event) => {
+      event.preventDefault();
+    
+      axios.post('http://localhost:3307/agregar-producto', {
+        nombre: nombre,
+        precio: precio,
+        stock: stock,
+        descripcion: descripcion,
+        categoria_id: categoriaId,
+        marca_id: marcaId,
+      })
+      .then(res => {
+        // actualiza los productos después de agregar
+        axios.get('http://localhost:3307/productos')
+          .then(res => setProductos(res.data))
+          .catch(err => console.error(err));
+        toast.success('Producto agregao correctamente mano', { autoClose: 4000 });
+        setIsEditModalOpen(false);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error('Error al crear producto', { autoClose: 4000 });
+      });
+    };
+
+
 
   return (
     <>
@@ -72,7 +109,7 @@ export default function VistaAdmin() {
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">Administración productos</h1>
             <div className="mt-5 sm:mt-6">
-                  <button type="submit" className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-blue-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-blue-400 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                  <button type="submit" onClick={agregarBtn}  className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-blue-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-blue-400 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                     Agregar producto
                   </button>
             </div>
@@ -157,6 +194,72 @@ export default function VistaAdmin() {
         </div>
       </div>
     )}
+          {isEditModalOpen && (
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+          <div className="fixed inset-0 transition-opacity">
+            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+          <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <h2 className="text-lg leading-6 font-medium text-gray-900">Editar Producto</h2>
+              <form onSubmit={agregarProduc} className="space-y-4">
+              <label className="block">
+                Nombre del producto:
+                <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
+              </label>
+              <label className="block">
+                Precio:
+                <input type="number" value={precio} onChange={e => setPrecio(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
+              </label>
+              <label className="block">
+                Stock:
+                <input type="number" value={stock} onChange={e => setStock(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
+              </label>
+              <label className="block">
+                Descripción:
+                <input type="text" value={descripcion} onChange={e => setDescripcion(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
+              </label>
+              <label className="block">
+                Categoria ID:
+                <input type="number" value={categoriaId} onChange={e => setCategoriaId(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
+              </label>
+              <label className="block">
+                Marca ID:
+                <input type="number" value={marcaId} onChange={e => setMarcaId(e.target.value)} className="mt-1 block w-full rounded-md shadow-sm" />
+              </label>
+              <div className="col-span-full">
+              <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">
+                Imagen del producto
+              </label>
+              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                <div className="text-center">
+                  <p className="mx-auto h-12 w-12 text-gray-300" aria-hidden="true" />
+                  <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                    <label
+                      htmlFor="file-upload"
+                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                    >
+                      <span>Seleccione una imagen</span>
+                      <input id="file-upload" name="file-upload" type="file" className="sr-only" />
+                    </label>
+                    <p className="pl-1">ó arrastre aquí</p>
+                  </div>
+                  <p className="text-xs leading-5 text-gray-600">PNG, JPG max 10MB</p>
+                </div>
+              </div>
+            </div>
+              <input type="submit" value="Crear producto" className="mt-4 inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150" />
+              <button type="button" onClick={() => setIsEditModalOpen(false)} className="mt-3 inline-flex justify-center w-full rounded-md border border-gray-300 px-4 py-2 bg-white text-base leading-6 font-medium text-gray-700 shadow-sm hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                    Cancelar
+                  </button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
     </>
   )
 }
