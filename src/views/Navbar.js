@@ -9,9 +9,6 @@ import CarritoDesplegable from './CarritoDesplegable';
 const navigation = [
   { name: 'Inicio', href: '/Home', current: false },
   { name: 'Productos', href: '/Productos', current: false },
-  { name: 'Materiales básico', href: '#', current: false },
-  { name: 'Herramientas manuales', href: '#', current: false },
-  { name: 'Tornillos y anclajes', href: '#', current: false },
   {name: 'Vista admin', href: '/vistaAdmin', current: false},
 ];
 
@@ -134,7 +131,9 @@ export default function Navbar() {
                           )}
                         </Menu.Item>
                       )}
-                      <Menu.Item>
+                                            {usuario ? (
+                        // Si hay un usuario autenticado, no mostrar el botón de "Iniciar sesión"
+                        <Menu.Item>
                         {({ active }) => (
                           <a
                             href="/Home"
@@ -145,6 +144,9 @@ export default function Navbar() {
                           </a>
                         )}
                       </Menu.Item>
+                      ) : (
+                        null
+                                            )}
                     </Menu.Items>
                   </Transition>
                 </Menu>

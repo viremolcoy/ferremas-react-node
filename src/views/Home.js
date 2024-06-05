@@ -6,6 +6,9 @@ import { Footer } from './Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import '../App.css';
+import Infohome from './infohome';
+import Porqueferremas from './porqueferremas';
+import Separtedeferremas from './separtedeferremas';
 
 export default function Home() {
     const settings = {
@@ -21,10 +24,10 @@ export default function Home() {
             <Navbar />  
 
             <CarouselComponent />
-  
-            <h1 className="text-center font-bold mt-20 pb-4">Productos por Categoría</h1>
+           <Infohome />
+           <Porqueferremas />
+           <Separtedeferremas />
 
-            <ProductosCat />
 
             <Footer />
             
