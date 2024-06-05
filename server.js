@@ -14,7 +14,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Lula7553',
+  password: 'nano2004',
   database: 'ferremas'
 });
 
@@ -85,7 +85,6 @@ app.post('/registro-usuario', async (req, res) => {
 //webpay
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
-<<<<<<< HEAD
 app.post('/create', async (req, res) => {
   const { buyOrder, sessionId, amount, returnUrl } = req.body;
   try {
@@ -141,8 +140,6 @@ app.post('/commit', async (req, res) => {
     res.status(500).json({ error: 'Error al confirmar la transacción' });
   }
 });
-=======
->>>>>>> 5d0d487c67ad79b40d0d290dae4793e062e3e4fd
 
 app.post('/crear-transaccion', async (req, res) => {
   const { buyOrder, sessionId, amount, returnUrl } = req.body;
