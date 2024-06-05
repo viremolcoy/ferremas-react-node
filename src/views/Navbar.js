@@ -79,7 +79,6 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <h1 className="text-white text-sm font-semibold">{usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}</h1>
                 <button type="button" onClick={() => setCarritoVisible(true)} className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Ver notificaciones</span>
@@ -112,6 +111,9 @@ export default function Navbar() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div className="block px-4 py-2 text-sm text-gray-500 font-bold">
+                      {usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}
+                    </div>
                       {usuario ? (null) : ( // Si no hay un usuario autenticado, mostrar el botón de "Iniciar sesión"
                         <Menu.Item>
                           {({ active }) => (
