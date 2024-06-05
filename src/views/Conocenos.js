@@ -1,7 +1,7 @@
 import socios from '../assets/img/socios.jpeg';
 import nosotros from '../assets/img/nosotros.jpg';
 
-export default function Separtedeferremas() {
+export default function Conocenos() {
     return (
       <div className="bg-white">
         <div className="mx-auto max-w-7xl py-20 sm:px-6 lg:px-8">

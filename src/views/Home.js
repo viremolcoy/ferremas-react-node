@@ -6,9 +6,9 @@ import { Footer } from './Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../index.css';
 import '../App.css';
-import Infohome from './infohome';
-import Porqueferremas from './porqueferremas';
-import Separtedeferremas from './separtedeferremas';
+import Cyber from './Cyber';
+import Porqueferremas from './Porqueferremas';
+import Conocenos from './Conocenos';
 
 export default function Home() {
     const settings = {
@@ -25,11 +25,11 @@ export default function Home() {
 
             <CarouselComponent />
 
-            <Infohome />
+            <Cyber />
 
             <Porqueferremas />
 
-            <Separtedeferremas />
+            <Conocenos/>
 
             <Footer />            
         </div>

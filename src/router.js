@@ -19,6 +19,7 @@ import Tornillos from './views/Tornillos.js';
 import Fijaciones from './views/Fijaciones.js';
 import Medicion from './views/Medicion.js';
 import Industriales from './views/Industriales.js';
+import Nosotros from './views/Nosotros.js';
 
 const router = createBrowserRouter([
   {
@@ -104,6 +105,10 @@ const router = createBrowserRouter([
   {
     path: '/industriales',
     element: <Industriales />
+  },
+  {
+    path: '/nosotros',
+    element: <Nosotros/>
   },
 ]);
 

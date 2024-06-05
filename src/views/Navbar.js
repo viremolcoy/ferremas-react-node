@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Materiales básicos', href: '/Materiales', current: false },
   { name: 'Equipos de seguridad', href: '/Seguridad', current: false },
   { name: 'Herramientas Industriales', href: '/Industriales', current: false },
+  { name: 'Acerca de nosotros ', href: '/Nosotros', current: false },
 ];
 
 function classNames(...classes) {
@@ -21,7 +22,7 @@ function classNames(...classes) {
 
 export default function Navbar() {
   const [carritoVisible, setCarritoVisible] = useState(false);
-  const [usuario, setUsuario] = useState(true); // Estado para almacenar el nombre y apellido del usuario
+  const [usuario, setUsuario] = useState(null); // Estado para almacenar el nombre y apellido del usuario
 
   useEffect(() => {
     // Obtener el nombre y apellido del usuario del localStorage
@@ -78,7 +79,7 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              
+                <h1 className="text-white text-sm font-semibold">{usuario ? `${usuario.nombre} ${usuario.apellido}` : ''}</h1>
                 <button type="button" onClick={() => setCarritoVisible(true)} className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">Ver notificaciones</span>
