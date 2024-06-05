@@ -1,0 +1,29 @@
+Instrucciones
+
+Instalar node.js
+
+Node.js — Run JavaScript Everywhere (nodejs.org)
+
+
+Clonar repositorio en visual studio:
+https://github.com/viremolcoy/ferremas-react-node.git
+
+Ejecutar dentro de la carpeta y en la consola:
+npm install
+
+Dentro de MYSQL WORKBENCH
+CREAR UN SCHEMA
+
+Crear tablas
+Poblar las tablas
+
+sacados del script correspondiente
+
+
+
+Una vez hecho lo anterior abrir 2 terminales y ejecutar lo siguiente:
+
+
+terminal 1: node server.js
+terminal 2: npm start
+
