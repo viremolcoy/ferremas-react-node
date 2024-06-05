@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 import { Footer } from './Footer';
 import '../index.css';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function SeleccionProducto() {
   const { id } = useParams(); // Obtener el id del producto de los parámetros de la URL
@@ -27,31 +28,33 @@ function SeleccionProducto() {
     if (usuario) {
       const carritoGuardado = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
       setCarrito(carritoGuardado);
+    } else {
+      const carritoGlobal = JSON.parse(localStorage.getItem('carrito')) || [];
+      setCarrito(carritoGlobal);
     }
   }, []);
 
-
-  const guardarCarritoEnLocalStorage = (carrito) => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
+  const guardarCarritoEnLocalStorage = (carrito, usuario) => {
     if (usuario) {
       localStorage.setItem('carrito_' + usuario.id, JSON.stringify(carrito));
     } else {
-      // Si no hay usuario autenticado, almacenar en un carrito global
       localStorage.setItem('carrito', JSON.stringify(carrito));
     }
   };
 
   const agregarAlCarrito = (producto) => {
     console.log('Agregando al carrito:', producto); // Agregar este console.log
+    toast.success('Producto agregado al carrito correctamente', { autoClose: 3000 });
     if (!producto) return;
     
     const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (!usuario) {
-      // Si no hay usuario autenticado, no hacemos nada
-      return;
+    let carritoUsuario = [];
+
+    if (usuario) {
+      carritoUsuario = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
+    } else {
+      carritoUsuario = JSON.parse(localStorage.getItem('carrito')) || [];
     }
-    
-    let carritoUsuario = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
     
     const index = carritoUsuario.findIndex((item) => item.id === producto.id);
     if (index !== -1) {
@@ -62,25 +65,23 @@ function SeleccionProducto() {
       carritoUsuario.push({ ...producto, cantidad: 1 });
     }
     
-    guardarCarritoEnLocalStorage(carritoUsuario);
+    guardarCarritoEnLocalStorage(carritoUsuario, usuario);
     setCarrito(carritoUsuario);
   };
 
-
-    // Función para generar la ruta de la imagen del producto
-    const generarRutaImagen = (idProducto) => {
-      return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
-    };
+  // Función para generar la ruta de la imagen del producto
+  const generarRutaImagen = (idProducto) => {
+    return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
+  };
 
   if (!producto) {
     return <div>Cargando...</div>;
   }
 
   return (
-    
     <div className="producto-detalles">
       <Navbar /> 
-
+      <ToastContainer />
       <div className="bg-white ">
         <div className="pt-6">
           <nav aria-label="Breadcrumb">
@@ -107,29 +108,29 @@ function SeleccionProducto() {
             </ol>
           </nav>
           
-          <div class="mx-auto mt-6 max-w-4xl sm:px-6 lg:max-w-7xl lg:px-8 grid grid-cols-1 lg:grid-cols-2">
+          <div className="mx-auto mt-6 max-w-4xl sm:px-6 lg:max-w-7xl lg:px-8 grid grid-cols-1 lg:grid-cols-2">
              
-              <div class="p-10 flex justify-center items-center">
-                  <img src={generarRutaImagen(producto.id)} alt={producto.nombre} class="w-full h-auto object-cover"/>
+              <div className="p-10 flex justify-center items-center">
+                  <img src={generarRutaImagen(producto.id)} alt={producto.nombre} className="w-full h-auto object-cover"/>
               </div>
               
-                <div class="flex flex-col justify-center items-start space-y-4 p-4">
-                  <div className="lg:col-span-2 lg:pr-8">
-                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{producto.nombre}</h1>
-                  </div>
-                  <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
-                  <p className="text-2xl tracking-tight text-gray-900">Stock: {producto.stock}</p>
-                  <form className="mt-10">
-                    <button type="submit" onClick={() => agregarAlCarrito(producto)} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Añadir al carrito</button>
-                  </form>
-                  <div className="pt-10 lg:col-span-2 lg:col-start-1 lg:pb-16 lg:pr-8 lg:pt-6">
-                    <div>
-                      <h2 className="text-sm font-medium text-gray-900">Descripción</h2>
-                      <div className="mt-4 space-y-6">
-                        <p className="text-sm text-gray-600">{producto.descripcion}</p>
-                      </div>
+              <div className="flex flex-col justify-center items-start space-y-4 p-4">
+                <div className="lg:col-span-2 lg:pr-8">
+                  <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{producto.nombre}</h1>
+                </div>
+                <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
+                <p className="text-2xl tracking-tight text-gray-900">Stock: {producto.stock}</p>
+                <form className="mt-10" onSubmit={(e) => e.preventDefault()}>
+                  <button type="button" onClick={() => agregarAlCarrito(producto)} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Añadir al carrito</button>
+                </form>
+                <div className="pt-10 lg:col-span-2 lg:col-start-1 lg:pb-16 lg:pr-8 lg:pt-6">
+                  <div>
+                    <h2 className="text-sm font-medium text-gray-900">Descripción</h2>
+                    <div className="mt-4 space-y-6">
+                      <p className="text-sm text-gray-600">{producto.descripcion}</p>
                     </div>
                   </div>
+                </div>
               </div>
 
           </div>
@@ -142,4 +143,3 @@ function SeleccionProducto() {
 }
 
 export default SeleccionProducto;
-
