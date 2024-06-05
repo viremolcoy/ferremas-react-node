@@ -8,7 +8,8 @@ import { useParams } from 'react-router-dom';
 
 
 export default function CarritoDesplegable({ onClose }) {
-  const [open, setOpen] = useState(true);
+    const [data, setData] = useState({ URL: '', token: '' });
+    const [open, setOpen] = useState(true);
     const { id } = useParams(); // Obtener el id del producto de los parámetros de la URL
     const [carrito, setCarrito] = useState([]);
     const [producto, setProducto] = useState(null);
@@ -23,6 +24,7 @@ export default function CarritoDesplegable({ onClose }) {
           console.error('Error al obtener el producto:', error);
         });
     }, [id]);
+
   
     useEffect(() => {
       const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
@@ -88,6 +90,34 @@ export default function CarritoDesplegable({ onClose }) {
       return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
     };
 
+    let globalData = ''
+
+    const fetchData  = () => {
+      fetch('http://localhost:3307/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: calcularPrecioTotal(),
+          sessionId: 'ferre-01',
+          buyOrder: 'ferre123',
+          returnUrl: 'http://localhost:3000/compraRealizada',
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('URL:', data.url);
+        console.log('Token:', data.token);
+        setUrl(data.url);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      }); 
+    };
+
+    fetchData();
+
 
     const [url, setUrl] = useState('');
     
@@ -101,36 +131,8 @@ export default function CarritoDesplegable({ onClose }) {
     onClose();
   };
 
-
-
-  fetch('http://localhost:3307/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      amount: calcularPrecioTotal(),
-      sessionId: 'ferre-01',
-      buyOrder: 'ferre123',
-      returnUrl: 'http://localhost:3000/compraRealizada',
-    }),
-  })
-  .then(response => response.json())
-  .then(data => {
-    console.log('URL:', data.url);
-    console.log('Token:', data.token);
-    console.log('Return URL:', data.returnUrl);
-    setUrl(data.url);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-
-
-  
-
-
   return (
+    
     <Transition.Root show={open} as={Fragment}>
       <Dialog className="relative z-10" onClose={handleClose}>
         <Transition.Child
@@ -229,11 +231,12 @@ export default function CarritoDesplegable({ onClose }) {
                       </div>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Tus compras pueden estar sujetas a impuestos</p>
+                      <p>{globalData}aaa</p>
                       <div className="mt-6">
                       
                         <form method="post" action="https://webpay3gint.transbank.cl/webpayserver/initTransaction">
-                          <input type="hidden" name="token_ws" value="01ab6cc5157e46da7ff90e88fd38884d7313545a671c25989fb656b673a7ef21" />
-                          <input className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700" type="submit" value="Ir a pagar" />
+                          <input className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700" type="submit" value="Ir a pagar"/>
+                          <input type="hidden" name="token_ws" value={data.token} />
                         </form>
                   
                       </div>
