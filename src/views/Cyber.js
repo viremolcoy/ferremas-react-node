@@ -1,4 +1,4 @@
-export default function Infohome() {
+export default function Cyber() {
 return (
     <div className="relative overflow-hidden bg-white mt-10 mb-10">
     <div className="pb-80 pt-16 sm:pb-40 sm:pt-24 lg:pb-48 lg:pt-40">
