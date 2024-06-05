@@ -9,7 +9,10 @@ import App from './App.js';
 import CarritoDesplegable from './views/CarritoDesplegable.js';
 import DetalleCompra from './views/DetalleCompra.js';
 import CompraRealizada from './views/CompraRealizada.js';
-
+import Productosnew from './views/Productosnew.js';
+import ErrorCompra from './views/ErrorCompra.js';
+import Registro from './views/Registro.js';
+import VistaAdmin from './views/VistaAdmin.js';
 
 const router = createBrowserRouter([
   {
@@ -25,12 +28,28 @@ const router = createBrowserRouter([
     element: <CompraRealizada />
   },
   {
+    path: '/errorCompra',
+    element: <ErrorCompra />    
+  },
+  {
     path: '/productos',
     element: <Productos /> // Página principal que muestra los productos
   },
   {
+    path: '/productosnew',
+    element: <Productosnew /> // Página principal que muestra los productos
+  },
+  {
     path: '/login',
     element: <Login />
+  },
+  {
+    path: '/registro',
+    element: <Registro />
+  },
+  {
+    path: '/vistaAdmin',
+    element: <VistaAdmin />
   },
   {
     path: '/detallecompra',

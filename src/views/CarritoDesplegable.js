@@ -1,135 +1,143 @@
-
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import React, { useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate} from 'react-router-dom';
 
 
 export default function CarritoDesplegable({ onClose }) {
-    const [data, setData] = useState({ URL: '', token: '' });
-    const [open, setOpen] = useState(true);
-    const { id } = useParams(); // Obtener el id del producto de los parámetros de la URL
-    const [carrito, setCarrito] = useState([]);
-    const [producto, setProducto] = useState(null);
-  
-    useEffect(() => {
-      axios.get(`http://localhost:3307/productos/${id}`)
-        .then(response => {
-          console.log('Datos del producto:', response.data); // Verificar los datos recibidos
-          setProducto(response.data);
-        })
-        .catch(error => {
-          console.error('Error al obtener el producto:', error);
-        });
-    }, [id]);
+  const [open, setOpen] = useState(true);
+  const { id } = useParams(); // Obtener el id del producto de los parámetros de la URL
+  const [carrito, setCarrito] = useState([]);
+  const [producto, setProducto] = useState(null);
 
-  
-    useEffect(() => {
-      const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
-      if (carritoGuardado) {
-        setCarrito(carritoGuardado);
-      }
-    }, []);
-  
-    const guardarCarritoEnLocalStorage = (carrito) => {
-      localStorage.setItem('carrito', JSON.stringify(carrito));
-    };
-  
-    const agregarAlCarrito = (producto) => {
-      const index = carrito.findIndex((item) => item.id === producto.id);
-      if (index !== -1) {
-        const nuevoCarrito = [...carrito];
-        nuevoCarrito[index].cantidad += 1;
-        setCarrito(nuevoCarrito);
-        guardarCarritoEnLocalStorage(nuevoCarrito);
-      } else {
-        setCarrito([...carrito, { ...producto, cantidad: 1 }]);
-        guardarCarritoEnLocalStorage([...carrito, { ...producto, cantidad: 1 }]);
-      }
-    };
-  
-    const eliminarDelCarrito = (id) => {
-      const nuevoCarrito = carrito.filter((item) => item.id !== id);
-      setCarrito(nuevoCarrito);
-      guardarCarritoEnLocalStorage(nuevoCarrito);
-    };
-
-    const incrementarCantidad = (id) => {
-      const nuevoCarrito = carrito.map((item) => {
-        if (item.id === id) {
-          const nuevaCantidad = item.cantidad + 1;
-          return { ...item, cantidad: nuevaCantidad };
-        }
-        return item;
-      });
-      setCarrito(nuevoCarrito);
-      guardarCarritoEnLocalStorage(nuevoCarrito);
-    };
-  
-    const decrementarCantidad = (id) => {
-      const nuevoCarrito = carrito.map((item) => {
-        if (item.id === id && item.cantidad > 1) {
-          const nuevaCantidad = item.cantidad - 1;
-          return { ...item, cantidad: nuevaCantidad };
-        }
-        return item;
-      });
-      setCarrito(nuevoCarrito);
-      guardarCarritoEnLocalStorage(nuevoCarrito);
-    };
-  
-    const calcularPrecioTotal = () => {
-      return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
-    };
-
-
-    // Función para generar la ruta de la imagen del producto
-    const generarRutaImagen = (idProducto) => {
-      return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
-    };
-
-    let globalData = ''
-
-    const fetchData  = () => {
-      fetch('http://localhost:3307/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: calcularPrecioTotal(),
-          sessionId: 'ferre-01',
-          buyOrder: 'ferre123',
-          returnUrl: 'http://localhost:3000/compraRealizada',
-        }),
+  useEffect(() => {
+    axios.get(`http://localhost:3307/productos/${id}`)
+      .then(response => {
+        console.log('Datos del producto:', response.data); // Verificar los datos recibidos
+        setProducto(response.data);
       })
-      .then(response => response.json())
-      .then(data => {
-        console.log('URL:', data.url);
-        console.log('Token:', data.token);
-        setUrl(data.url);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      }); 
-    };
+      .catch(error => {
+        console.error('Error al obtener el producto:', error);
+      });
+  }, [id]);
 
-    fetchData();
+  useEffect(() => {
+    const carritoGuardado = JSON.parse(localStorage.getItem('carrito'));
+    if (carritoGuardado) {
+      setCarrito(carritoGuardado);
+    }
+  }, []);
 
+  const guardarCarritoEnLocalStorage = (carrito) => {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+  };
 
-    const [url, setUrl] = useState('');
-    
-  if (!producto) {
-    return <div>Cargando...</div>;
-  }
+  const agregarAlCarrito = (producto) => {
+    if (!producto) return;
+    const index = carrito.findIndex((item) => item.id === producto.id);
+    if (index !== -1) {
+      const nuevoCarrito = [...carrito];
+      nuevoCarrito[index].cantidad += 1;
+      setCarrito(nuevoCarrito);
+      guardarCarritoEnLocalStorage(nuevoCarrito);
+    } else {
+      setCarrito([...carrito, { ...producto, cantidad: 1 }]);
+      guardarCarritoEnLocalStorage([...carrito, { ...producto, cantidad: 1 }]);
+    }
+  };
 
+  const eliminarDelCarrito = (id) => {
+    const nuevoCarrito = carrito.filter((item) => item.id !== id);
+    setCarrito(nuevoCarrito);
+    guardarCarritoEnLocalStorage(nuevoCarrito);
+  };
+
+  const incrementarCantidad = (id) => {
+    const nuevoCarrito = carrito.map((item) => {
+      if (item.id === id) {
+        const nuevaCantidad = item.cantidad + 1;
+        return { ...item, cantidad: nuevaCantidad };
+      }
+      return item;
+    });
+    setCarrito(nuevoCarrito);
+    guardarCarritoEnLocalStorage(nuevoCarrito);
+  };
+
+  const decrementarCantidad = (id) => {
+    const nuevoCarrito = carrito.map((item) => {
+      if (item.id === id && item.cantidad > 1) {
+        const nuevaCantidad = item.cantidad - 1;
+        return { ...item, cantidad: nuevaCantidad };
+      }
+      return item;
+    });
+    setCarrito(nuevoCarrito);
+    guardarCarritoEnLocalStorage(nuevoCarrito);
+  };
+
+  const calcularPrecioTotal = () => {
+    return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+  };
+
+  const generarRutaImagen = (idProducto) => {
+    return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
+  };
+
+  const [url, setUrl] = useState('');
 
   const handleClose = () => {
     setOpen(false);
     onClose();
   };
+  const handlePagar = async () => {
+    const buyOrder = `O-${Date.now()}`;
+    const sessionId = `S-${Date.now()}`;
+    const amount = calcularPrecioTotal();
+    const returnUrl = 'http://localhost:3307/commit-transaccion';
+  
+    try {
+      const response = await axios.post('http://localhost:3307/crear-transaccion', {
+        buyOrder,
+        sessionId,
+        amount,
+        returnUrl
+      });
+  
+      const { token, url } = response.data;
+      const form = document.createElement('form');
+      form.action = url;
+      form.method = 'POST';
+  
+      const tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = 'token_ws';
+      tokenInput.value = token;
+      form.appendChild(tokenInput);
+      console.log('Token:', token);
+  
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error) {
+      console.error('Error al crear la transacción:', error);
+    }
+  };
+  
+  // Nueva función para limpiar el carrito
+  const limpiarCarrito = () => {
+    setCarrito([]);
+    localStorage.removeItem('carrito');
+  };
+  
+  // Modificar useEffect para vaciar el carrito después de redirigir a la página de confirmación de compra
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('compraRealizada') === 'true') {
+      limpiarCarrito();
+    }
+  }, []);
+  
 
   return (
     
@@ -176,69 +184,66 @@ export default function CarritoDesplegable({ onClose }) {
                           </button>
                         </div>
                       </div>
-                    {carrito.map((item) => (
-
-
-                      <div className="mt-8">
-                        <div className="flow-root">
-                          <ul role="list" className="-my-6 divide-y divide-gray-200">
-                              <li className="flex py-6" key={item.id}>
-                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                <img src={generarRutaImagen(item.id)} alt={producto.nombre} className="h-full w-full object-cover object-center"/>
-                                </div>
-
-                                <div className="ml-4 flex flex-1 flex-col">
-                                  <div>
-                                    <div className="flex justify-between text-base font-medium text-gray-900">
-                                      <h3>
-                                        <a href="">{item.nombre}</a>
-                                      </h3>
-                                      <p className="ml-4">{Number(item.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
+                      {carrito.length > 0 ? (
+                        carrito.map((item) => (
+                          <div className="mt-8" key={item.id}>
+                            <div className="flow-root">
+                              <ul role="list" className="-my-6 divide-y divide-gray-200">
+                                <li className="flex py-6">
+                                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                    <img src={generarRutaImagen(item.id)} alt={item.nombre} className="h-full w-full object-cover object-center"/>
+                                  </div>
+                                  <div className="ml-4 flex flex-1 flex-col">
+                                    <div>
+                                      <div className="flex justify-between text-base font-medium text-gray-900">
+                                        <h3>
+                                          <a href="">{item.nombre}</a>
+                                        </h3>
+                                        <p className="ml-4">{Number(item.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex flex-1 items-end justify-between text-sm">
+                                      <div>
+                                        <button onClick={() => decrementarCantidad(item.id)}>-</button>
+                                        <p className="text-gray-500">Cantidad {item.cantidad}</p>
+                                        <button onClick={() => incrementarCantidad(item.id)}>+</button>
+                                      </div>
+                                      <div className="flex">
+                                        <button
+                                          type="button"
+                                          className="font-medium text-indigo-600 hover:text-indigo-500"
+                                          onClick={() => eliminarDelCarrito(item.id)}
+                                        >
+                                          Eliminar
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="flex flex-1 items-end justify-between text-sm">
-                                  <div>
-                                    <button onClick={() => decrementarCantidad(item.id)}>-</button>
-                                    <p className="text-gray-500">Cantidad {item.cantidad}</p>
-                                    <button onClick={() => incrementarCantidad(item.id)}>+</button>
-                                  </div>
-                                    <div className="flex">
-                                      <button
-                                        type="button"
-                                        className="font-medium text-indigo-600 hover:text-indigo-500"
-                                        onClick={() => eliminarDelCarrito(item.id)}
-                                      >
-                                        Eliminar
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </li>
-                          </ul>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="mt-8 text-center">
+                          <p className="text-gray-500">Tu carrito está vacío</p>
                         </div>
-                      </div>
-                        ))}
+                      )}
                     </div>
-
-
-
-
 
                     <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
-                      <div>
                         <h3>Total: {Number(calcularPrecioTotal()).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h3>
-                      </div>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Tus compras pueden estar sujetas a impuestos</p>
                       <p>{globalData}aaa</p>
                       <div className="mt-6">
-                      
-                        <form method="post" action="https://webpay3gint.transbank.cl/webpayserver/initTransaction">
-                          <input className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700" type="submit" value="Ir a pagar"/>
-                          <input type="hidden" name="token_ws" value={data.token} />
-                        </form>
-                  
+                        <button onClick={handlePagar}
+                          type="submit"
+                          className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                          Ir a pagar
+                        </button>
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                         <p>
@@ -264,5 +269,3 @@ export default function CarritoDesplegable({ onClose }) {
     </Transition.Root>
   );
 }
-
-

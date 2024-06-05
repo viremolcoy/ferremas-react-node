@@ -1,6 +1,5 @@
 import React from 'react';
 import Navbar from './Navbar';
-import Productos from './ListadoProductos';
 import ProductosCat from './ProductosCat';
 import CarouselComponent from './CarouselComponent';
 import { Footer } from './Footer';
