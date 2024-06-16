@@ -9,3 +9,53 @@
 a{
     text-decoration: none !important;
   }
+
+ /* src/components/FilaDeIconos.css */
+.fila-de-iconos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 80px;
+  margin-bottom: 80px;
+}
+
+.icon-container {
+  flex: 0 1 calc(100% / 7 - 10px); /* 10px es un valor arbitrario para margen, ajustar según sea necesario */
+  margin-bottom: 20px; /* Espaciado inferior */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-image {
+  width: 120px; /* Tamaño fijo para todos los iconos */
+  height: 120px; /* Tamaño fijo para todos los iconos */
+}
+
+.icon-title {
+  text-align: center;
+  margin-top: 10px;
+}
+
+@media (max-width: 992px) {
+  .icon-container {
+    flex: 0 1 calc(100% / 4 - 10px); /* Ajustar tamaño para pantallas medianas */
+  }
+}
+
+@media (max-width: 768px) {
+  .icon-container {
+    flex: 0 1 calc(100% / 3 - 10px); /* Ajustar tamaño para pantallas más pequeñas */
+  }
+}
+
+@media (max-width: 576px) {
+  .icon-container {
+    flex: 0 1 calc(100% / 2 - 10px); /* Ajustar tamaño para pantallas muy pequeñas */
+  }
+
+  .fila-de-iconos {
+    margin-top: 50;
+    margin-bottom: 0;
+  }
+}
