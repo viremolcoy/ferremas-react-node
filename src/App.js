@@ -5,6 +5,7 @@ import CarritoDesplegable from './views/CarritoDesplegable';
 
 
 
+
 function App() {
   const [carrito, setCarrito] = useState([]);
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/producto/:id">
         </Route>
       <CarritoDesplegable carrito={carrito} />
+      <PrivateRoute path="/vistaAdmin" element={<VistaAdmin />} />
     </Router>
   );
 }

@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function VistaAdmin() {
+  console.log('VistaAdmin');
     const [productos, setProductos] = useState([]);
     const [editProduc, setEditProduc] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,10 +44,6 @@ export default function VistaAdmin() {
         .then(res => setProductos(res.data))
         .catch(err => console.error(err));
     }, []);
-
-    function pesoChileno(value) {
-      return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
-    }
 
     function editarProducto(id) {
       const producto = productos.find(producto => producto.id === id);

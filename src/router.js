@@ -21,6 +21,7 @@ import Medicion from './views/Medicion.js';
 import Industriales from './views/Industriales.js';
 import Nosotros from './views/Nosotros.js';
 import Compra from './views/Compra.js';
+import PrivateRoute from './PrivateRoute.js';
 
 const router = createBrowserRouter([
   {
@@ -56,8 +57,10 @@ const router = createBrowserRouter([
     element: <Registro />
   },
   {
-    path: '/vistaAdmin',
-    element: <VistaAdmin />
+    path: '/vistaAdmin/*',
+    element: <PrivateRoute>
+      <VistaAdmin />
+    </PrivateRoute>
   },
   {
     path: '/detallecompra',

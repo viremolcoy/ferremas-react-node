@@ -12,12 +12,17 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors());
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true // Habilita el envío de cookies
+}));
+
+// Configuración de la conexión a la base de datos
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'admin',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -26,7 +31,7 @@ app.use(session({
   secret: 'ferre', // Cambia esto a un secreto seguro
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Debes cambiar a true si usas HTTPS
+  cookie: { secure: false } // Cambia a true si usas HTTPS
 }));
 
 connection.connect(err => {
@@ -41,7 +46,11 @@ app.post('/ini-sesion', async (req, res) => {
   const { correo, clave } = req.body;
 
   // Buscar el usuario en la base de datos
-  const query = 'SELECT * FROM Usuario WHERE correo = ?';
+  const query = `
+    SELECT Usuario.*, tipo_usuario.descripcion AS rol
+    FROM Usuario
+    INNER JOIN tipo_usuario ON Usuario.tipo_usuario_id = tipo_usuario.id
+    WHERE Usuario.correo = ?`;
   const Usuario = await new Promise((resolve, reject) => {
     connection.query(query, [correo], (error, results) => {
       if (error) {
@@ -62,16 +71,30 @@ app.post('/ini-sesion', async (req, res) => {
   }
 
   // Guardar el usuario en la sesión
-  req.session.user = {
+  if (req.session.user = {
     id: Usuario.id,
     nombre: Usuario.nombre,
     apellido: Usuario.apellido,
-    correo: Usuario.correo // Agregar el correo del usuario
-  };
+    correo: Usuario.correo,
+    rol: Usuario.rol
+  });else {
+  res.status(401).json({ message: 'Usuario no existe' });
+  }
+  
+  console.log('Datos sesion: ', req.session.user);
 
   res.status(200).json({ message: 'Inicio de sesión exitoso',
-  usuario: req.session.user // Enviar los datos del usuari
+  usuario: req.session.user // Enviar los datos del usuario
    });
+});
+
+//ruta para devolver el usuario de la sesión
+app.get('/sesion-usuario', (req, res) => {
+  if (req.session.user) {
+    res.json(req.session.user);
+  } else {
+    res.status(401).json({ message: 'No estás autenticado' });
+  }
 });
 
 // Agregar la ruta para cerrar sesión

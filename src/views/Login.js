@@ -17,13 +17,14 @@ export default function Login() {
     const clave = event.target.password.value;
     
     try {
-      const response = await axios.post('http://localhost:3307/ini-sesion', { correo, clave });
+      const response = await axios.post('http://localhost:3307/ini-sesion', { correo, clave },{withCredentials: true});
       setErrorMensaje(null);
       setInicioMensaje(response.data.message); 
   
       // Guardar usuario en localStorage
       const usuario = response.data.usuario;
       localStorage.setItem('usuario', JSON.stringify(usuario));
+      console.log(usuario);
 
   
       setTimeout(() => {
