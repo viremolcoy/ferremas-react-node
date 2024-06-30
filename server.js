@@ -288,7 +288,7 @@ app.get('/productos', (req, res) => {
 // ruta para editar productos
 app.put('/editar-productos/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const { nombre, precio, stock } = req.body;
+  const { nombre, precio, stock, estado_id } = req.body;
 
   // verifica si el producto existe
   connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
@@ -304,7 +304,7 @@ app.put('/editar-productos/:id', (req, res) => {
     }
 
     // si el producto existe se actualiza
-    connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ? WHERE id = ?', [nombre, precio, stock, id], (error, results) => {
+    connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ?, estado_id = ? WHERE id = ?', [nombre, precio, stock, estado_id, id], (error, results) => {
       if (error) {
         console.error('Error al actualizar el producto:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -312,7 +312,7 @@ app.put('/editar-productos/:id', (req, res) => {
       }
 
       // Devuelve el producto actualizado
-      res.json({ id, nombre, precio, stock });
+      res.json({ id, nombre, precio, stock, estado_id });
     });
   });
 });
@@ -474,8 +474,19 @@ app.get('/categorias', (req, res) => {
   });
 });
 
+//ruta para obtener el estado del producto
+app.get('/estado-producto', (req, res) => {
+  connection.query('SELECT * FROM Estado_producto', (error, results) => {
+    if (error) {
+      console.error('Error al obtener los productos:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+    res.json(results);
+  });
+});
 
-// Ruta para obtener las categorías de la base de datos
+// Ruta para obtener las marcas de la base de datos
 app.get('/marcas', (req, res) => {
   connection.query('SELECT * FROM Marca', (error, marcas) => {
     if (error) {

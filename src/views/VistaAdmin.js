@@ -6,7 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function VistaAdmin() {
-  console.log('VistaAdmin');
     const [productos, setProductos] = useState([]);
     const [editProduc, setEditProduc] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,8 +19,18 @@ export default function VistaAdmin() {
     const [imagen, setImagen] = useState(null);
     const [categorias, setCategorias] = useState([]);
     const [marcas, setMarcas] = useState([]);
+    const [estadoId, setestadoId] = useState(0);
+    const [estadoProducto, setestadoProducto] = useState([]);
  
     useEffect(() => {
+        axios.get('http://localhost:3307/estado-producto')
+            .then(response => {
+                setestadoProducto(response.data);
+            })
+            .catch(error => {
+                console.error("Hubo un error al obtener los estados de los productos", error);
+            });
+
         axios.get('http://localhost:3307/categorias')
             .then(response => {
                 setCategorias(response.data);
@@ -56,24 +65,10 @@ export default function VistaAdmin() {
       }
     }
     
-    function eliminarProducto(id) {
-      axios.delete(`http://localhost:3307/eliminar-producto/${id}`)
-        .then(() => {
-          // después de eliminar, se obtienen los productos actualizados
-          axios.get('http://localhost:3307/productos')
-            .then(res => setProductos(res.data))
-            .catch(err => console.error(err));
-          toast.success('Producto eliminado correctamente', { autoClose: 4000 });
-        })
-        .catch(err => {
-          console.error(err);
-          toast.error('Error al eliminar producto', { autoClose: 4000 });
-        });
-    }
-
     const confirEdit = (event) => {
       event.preventDefault();
-      axios.put(`http://localhost:3307/editar-productos/${editProduc.id}`, editProduc)
+      const updatedProduct = { ...editProduc, estado_id: estadoId }; 
+      axios.put(`http://localhost:3307/editar-productos/${editProduc.id}`, updatedProduct)
         .then(res => {
           // actualiza los productos después de editar 
           axios.get('http://localhost:3307/productos')
@@ -81,12 +76,18 @@ export default function VistaAdmin() {
             .catch(err => console.error(err));
           setIsModalOpen(false);
           toast.success('Producto editado correctamente', { autoClose: 4000 });
-
+    
         })
         .catch(err => {
           console.error(err);
           toast.error('Error al editar producto', { autoClose: 4000 });
         });
+    };
+
+    const cambioEstado = (e) => {
+      const newEstadoId = e.target.value;
+      setestadoId(newEstadoId);
+      setEditProduc(prevProduc => ({ ...prevProduc, estado_id: newEstadoId })); 
     };
 
     const agregarBtn = () => {
@@ -182,7 +183,7 @@ export default function VistaAdmin() {
                         <td className="px-6 py-4 whitespace-nowrap">{producto.stock}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"  onClick={() => editarProducto(producto.id)}>Editar</button>
-                          <button  className="px-4 py-2 bg-red-500 text-white rounded ml-2 hover:bg-red-700"  onClick={() => eliminarProducto(producto.id)}>Eliminar</button>
+                          
                         </td>
                         </tr>
                     ))}
@@ -214,6 +215,15 @@ export default function VistaAdmin() {
                   Stock:
                   <input type="number" value={editProduc.stock} onChange={e => setEditProduc({...editProduc, stock: e.target.value})} className="mt-1 block w-full rounded-md shadow-sm" />
                 </label>
+                <label className="block">
+                Estado producto:
+                <select value={estadoId} onChange={cambioEstado} className="mt-1 block w-full rounded-md shadow-sm">
+                    <option value="">Selecciona estado del producto</option>
+                    {estadoProducto.map(estadoProducto => (
+                        <option key={estadoProducto.id} value={estadoProducto.id}>{estadoProducto.descripcion}</option>
+                    ))}
+                </select>
+              </label>
                 <div className="mt-5 sm:mt-6">
                   <button type="submit" className="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:border-green-700 focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                     Guardar
