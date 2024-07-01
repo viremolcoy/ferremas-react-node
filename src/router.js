@@ -25,6 +25,7 @@ import Cosas from './views/Cosas.js';
 import Aaaa from './views/aaaa.js'
 import Transferencia from './views/Transferencia.js';
 import PrivateRoute from './PrivateRoute.js';
+import CheckoutForm from './views/Checkoutform.js';
 
 const router = createBrowserRouter([
   {
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
   {
     path: '/productosCat',
     element: <ProductosCat />
+  },
+  {
+    path: '/CheckoutForm',
+    element: <CheckoutForm />
   },
   {
     path: '/producto/:id', // Ajuste aquí para aceptar el ID del producto

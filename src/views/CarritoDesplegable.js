@@ -5,11 +5,14 @@ import axios from 'axios';
 import { CarritoContext } from './CarritoContext';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function CarritoDesplegable({ onClose }) {
   const [open, setOpen] = useState(true);
   const { carrito, eliminarDelCarrito, incrementarCantidad, decrementarCantidad, calcularPrecioTotal } = useContext(CarritoContext);
   const [producto, setProducto] = useState(null);
+
+  const navigate = useNavigate();
 
   const generarRutaImagen = (idProducto) => {
     return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
@@ -29,35 +32,7 @@ export default function CarritoDesplegable({ onClose }) {
   };
 
   const handlePagar = async () => {
-    const buyOrder = `O-${Date.now()}`;
-    const sessionId = `S-${Date.now()}`;
-    const amount = calcularPrecioTotal();
-    const returnUrl = 'http://localhost:3307/commit-transaccion';
-
-    try {
-      const response = await axios.post('http://localhost:3307/crear-transaccion', {
-        buyOrder,
-        sessionId,
-        amount,
-        returnUrl
-      });
-
-      const { token, url } = response.data;
-      const form = document.createElement('form');
-      form.action = url;
-      form.method = 'POST';
-
-      const tokenInput = document.createElement('input');
-      tokenInput.type = 'hidden';
-      tokenInput.name = 'token_ws';
-      tokenInput.value = token;
-      form.appendChild(tokenInput);
-
-      document.body.appendChild(form);
-      form.submit();
-    } catch (error) {
-      console.error('Error al crear la transacción:', error);
-    }
+    navigate('/Cosas')
   };
 
   return (

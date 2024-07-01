@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Si tienes otras reglas CSS, puedes agregarlas aquí */
+
+
 @import "~slick-carousel/slick/slick.css"; 
 @import "~slick-carousel/slick/slick-theme.css";
 

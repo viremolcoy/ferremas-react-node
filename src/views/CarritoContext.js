@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
 export const CarritoContext = createContext();
@@ -6,7 +6,7 @@ export const CarritoContext = createContext();
 export const CarritoProvider = ({ children }) => {
   const [carrito, setCarrito] = useState([]);
 
-  useEffect(() => {
+  const cargarCarritoDesdeLocalStorage = useCallback(() => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     let carritoGuardado = [];
     if (usuario) {
@@ -16,6 +16,10 @@ export const CarritoProvider = ({ children }) => {
     }
     setCarrito(carritoGuardado);
   }, []);
+
+  useEffect(() => {
+    cargarCarritoDesdeLocalStorage();
+  }, [cargarCarritoDesdeLocalStorage]);
 
   const guardarCarritoEnLocalStorage = (carrito) => {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
@@ -101,6 +105,11 @@ export const CarritoProvider = ({ children }) => {
     return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
   };
 
+  const vaciarCarrito = () => {
+    setCarrito([]);
+    guardarCarritoEnLocalStorage([]);
+  };
+
   return (
     <CarritoContext.Provider value={{
       carrito,
@@ -109,6 +118,8 @@ export const CarritoProvider = ({ children }) => {
       incrementarCantidad,
       decrementarCantidad,
       calcularPrecioTotal,
+      vaciarCarrito,
+      cargarCarritoDesdeLocalStorage,
     }}>
       {children}
     </CarritoContext.Provider>

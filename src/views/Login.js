@@ -1,14 +1,16 @@
 import axios from 'axios';
 import logo from '../assets/img/logo.png';
 import Navbar from './Navbar';
-import { useState } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { CarritoContext } from './CarritoContext';
 
-
+export const AuthContext = createContext();
 export default function Login() {
 
   const [errorMensaje, setErrorMensaje] = useState(null);
   const [inicioMensaje, setInicioMensaje] = useState(null);
+  const { cargarCarritoDesdeLocalStorage } = useContext(CarritoContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -25,6 +27,8 @@ export default function Login() {
       const usuario = response.data.usuario;
       localStorage.setItem('usuario', JSON.stringify(usuario));
       console.log(usuario);
+      localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+      cargarCarritoDesdeLocalStorage(); // Actualizar el carrito al iniciar sesión
 
   
       setTimeout(() => {

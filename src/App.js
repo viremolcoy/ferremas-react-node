@@ -20,11 +20,15 @@ import VistaAdmin from './VistaAdmin';
 import OrderSummary from './OrderSummary';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './dist/output.css';
+import CheckoutForm from './views/Checkoutform';
+import Transferencia from './views/Transferencia';
+
+
 
 
 function App() {
   return (
-<<<<<<< HEAD
     <CarritoProvider>
       <Router>
         <Navbar />
@@ -46,18 +50,14 @@ function App() {
           <Route path="/ErrorCompra" element={<ErrorCompra />} />
           <Route path="/vistaAdmin" element={<VistaAdmin />} />
           <Route path="/Carrito" element={<OrderSummary />} />
+          <PrivateRoute path="/vistaAdmin" element={<VistaAdmin />} />
+          <Route path="/checkout" element={<CheckoutForm />} />
+          <Route path="/transferencia" element={<Transferencia />} />
           {/* Otras rutas */}
         </Routes>
       </Router>
     </CarritoProvider>
-=======
-    <Router>
-        <Route path="/producto/:id">
-        </Route>
-      <CarritoDesplegable carrito={carrito} />
-      <PrivateRoute path="/vistaAdmin" element={<VistaAdmin />} />
-    </Router>
->>>>>>> 7352239e0d510bb9ee47f152b75ea9b3a3c18b6a
+
   );
 }
 
