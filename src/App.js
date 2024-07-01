@@ -21,8 +21,10 @@ import OrderSummary from './OrderSummary';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 function App() {
   return (
+<<<<<<< HEAD
     <CarritoProvider>
       <Router>
         <Navbar />
@@ -48,6 +50,14 @@ function App() {
         </Routes>
       </Router>
     </CarritoProvider>
+=======
+    <Router>
+        <Route path="/producto/:id">
+        </Route>
+      <CarritoDesplegable carrito={carrito} />
+      <PrivateRoute path="/vistaAdmin" element={<VistaAdmin />} />
+    </Router>
+>>>>>>> 7352239e0d510bb9ee47f152b75ea9b3a3c18b6a
   );
 }
 

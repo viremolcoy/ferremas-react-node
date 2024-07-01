@@ -20,9 +20,9 @@ const icons = [
 const Categgorias = () => {
   return (
     <div className="container">
-      <div className="fila-de-iconos">
+      <div className="fila-de-iconos ">
         {icons.map((icon, index) => (       
-            <a href={icon.href} key={index} className="icon-container" style={{ width: '14.28%' }}>
+            <a href={icon.href} key={index} className="icon-container drop-shadow-md hover:drop-shadow-xl hover:scale-125" style={{ width: '14.28%' }}>
               <img src={icon.src} alt={icon.title} className="img-fluid icon-image" />
               <h5 className="mt-2 icon-title" style={{ textDecoration: 'none', color: '#333' }}>{icon.title}</h5>
             </a> 

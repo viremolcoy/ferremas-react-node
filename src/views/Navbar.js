@@ -5,6 +5,7 @@ import logo from '../assets/img/logo.png';
 import dualipa from '../assets/img/dualipa.jpg';
 import user from '../assets/img/user.png';
 import CarritoDesplegable from './CarritoDesplegable';
+import axios from 'axios';
 
 const navigation = [
   { name: 'Inicio', href: '/Home', current: false },
@@ -34,8 +35,14 @@ export default function Navbar() {
 
 
   const handleLogout = () => {
-    localStorage.removeItem('usuario'); // Eliminar usuario del localStorage
-    // Redirigir a la página de inicio de sesión
+    axios.get('http://localhost:3307/logout', { withCredentials: true })
+      .then(response => {
+        localStorage.removeItem('usuario'); // Eliminar usuario del localStorage
+        // Redirigir a la página de inicio de sesión
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   };
 
   return (

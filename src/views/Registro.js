@@ -12,11 +12,45 @@ export default function Registro() {
   const [rut, setRut] = useState('');
   const [correo, setCorreo] = useState('');
   const [clave, setClave] = useState('');
+  const [error, setError] = useState({nombre: '', apellido: '', rut: '', correo: '', clave: ''});
   let navigate = useNavigate();
 
 
   const registrar = async (e) => {
     e.preventDefault();
+  
+    const nombreRegex = /^.{1,30}$/;
+    const apellidoRegex = /^.{1,30}$/;
+    const rutRegex = /^[0-9]{7,8}-[0-9Kk]{1}$/;
+    const correoRegex = /\S+@\S+\.\S+/;
+    // la contraseña debe tener menos una letra mayúscula, una letra minúscula y un número
+    const claveRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/; 
+  
+    if (!nombreRegex.test(nombre)) {
+      setError(prevState => ({...prevState, nombre: 'El nombre debe tener máximo 30 letras'}));
+      return;
+    }
+
+    if (!apellidoRegex.test(apellido)) {
+      setError(prevState => ({...prevState, apellido: 'El apellido debe tener máximo 30 letras'}));
+      return;
+    }
+
+    if (!rutRegex.test(rut)) {
+      setError(prevState => ({...prevState, rut: 'El rut debe tener el formato 12345678-9'}));
+      return;
+    }
+
+    if (!correoRegex.test(correo)) {
+      setError(prevState => ({...prevState, correo: 'El correo debe tener un formato válido (ejemplo@dominio.com)'}));
+      return;
+    }
+
+    if (!claveRegex.test(clave)) {
+      setError(prevState => ({...prevState, clave: 'La contraseña debe ser segura: al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número'}));
+      return;
+    }
+  
     try {
       const response = await axios.post(
         'http://localhost:3307/registro-usuario',{ nombre, apellido, rut, correo, clave },
@@ -26,7 +60,7 @@ export default function Registro() {
         console.log('Registro exitoso');
         toast.success('Has sido registrado con éxito.', { autoClose: 4000 });
         setTimeout(() => {
-            navigate('/home');
+            navigate('/login');
           }, 4000);
       } else {
         console.log('Error en el registro');
@@ -42,11 +76,13 @@ export default function Registro() {
       <Navbar />
       <ToastContainer />
       
-      <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
+        <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Registro</h2>
         </div>
-        <form onSubmit={registrar} className="mx-auto mt-16 max-w-xl sm:mt-20">
+        
+        <form onSubmit={registrar} className="mt-8">
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
             <div>
               <label htmlFor="nombre" className="block text-sm font-semibold leading-6 text-gray-900">
@@ -62,6 +98,7 @@ export default function Registro() {
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                 />
+                {error.nombre && <p className="mt-2 text-sm text-red-500">{error.nombre}</p>}
               </div>
             </div>
             <div>
@@ -78,6 +115,7 @@ export default function Registro() {
                   value={apellido}
                   onChange={(e) => setApellido(e.target.value)}
                 />
+                {error.apellido && <p className="mt-2 text-sm text-red-500">{error.apellido}</p>}
               </div>
             </div>
             <div className="sm:col-span-2">
@@ -95,6 +133,7 @@ export default function Registro() {
                   value={rut}
                   onChange={(e) => setRut(e.target.value)}
                 />
+                {error.rut && <p className="mt-2 text-sm text-red-500">{error.rut}</p>}
               </div>
             </div>
             <div className="sm:col-span-2">
@@ -111,6 +150,7 @@ export default function Registro() {
                   value={correo}
                   onChange={(e) => setCorreo(e.target.value)}
                 />
+                {error.correo && <p className="mt-2 text-sm text-red-500">{error.correo}</p>}
               </div>
             </div>
             <div className="sm:col-span-2">
@@ -127,6 +167,7 @@ export default function Registro() {
                   value={clave}
                   onChange={(e) => setClave(e.target.value)}
                 />
+                {error.clave && <p className="mt-2 text-sm text-red-500">{error.clave}</p>}
               </div>
             </div>
           </div>
@@ -140,7 +181,7 @@ export default function Registro() {
           </div>
         </form>
       </div>
-
+    </div>
     </>
   );
 }

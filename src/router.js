@@ -21,9 +21,13 @@ import Medicion from './views/Medicion.js';
 import Industriales from './views/Industriales.js';
 import Nosotros from './views/Nosotros.js';
 import Compra from './views/Compra.js';
+<<<<<<< HEAD
 import Cosas from './views/Cosas.js';
 import Aaaa from './views/aaaa.js'
 import Transferencia from './views/Transferencia.js';
+=======
+import PrivateRoute from './PrivateRoute.js';
+>>>>>>> 7352239e0d510bb9ee47f152b75ea9b3a3c18b6a
 
 const router = createBrowserRouter([
   {
@@ -71,8 +75,10 @@ const router = createBrowserRouter([
     element: <Registro />
   },
   {
-    path: '/vistaAdmin',
-    element: <VistaAdmin />
+    path: '/vistaAdmin/*',
+    element: <PrivateRoute>
+      <VistaAdmin />
+    </PrivateRoute>
   },
   {
     path: '/detallecompra',

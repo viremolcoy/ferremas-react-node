@@ -12,12 +12,21 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors());
 
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true // Habilita el envío de cookies
+}));
+
+// Configuración de la conexión a la base de datos
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
+<<<<<<< HEAD
   password: 'nano2004',
+=======
+  password: 'Lula7553',
+>>>>>>> 7352239e0d510bb9ee47f152b75ea9b3a3c18b6a
   database: 'ferremas'
 });
 
@@ -26,7 +35,7 @@ app.use(session({
   secret: 'ferre', // Cambia esto a un secreto seguro
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Debes cambiar a true si usas HTTPS
+  cookie: { secure: false } // Cambia a true si usas HTTPS
 }));
 
 connection.connect(err => {
@@ -41,7 +50,11 @@ app.post('/ini-sesion', async (req, res) => {
   const { correo, clave } = req.body;
 
   // Buscar el usuario en la base de datos
-  const query = 'SELECT * FROM Usuario WHERE correo = ?';
+  const query = `
+    SELECT Usuario.*, tipo_usuario.descripcion AS rol
+    FROM Usuario
+    INNER JOIN tipo_usuario ON Usuario.tipo_usuario_id = tipo_usuario.id
+    WHERE Usuario.correo = ?`;
   const Usuario = await new Promise((resolve, reject) => {
     connection.query(query, [correo], (error, results) => {
       if (error) {
@@ -62,24 +75,39 @@ app.post('/ini-sesion', async (req, res) => {
   }
 
   // Guardar el usuario en la sesión
-  req.session.user = {
+  if (req.session.user = {
     id: Usuario.id,
     nombre: Usuario.nombre,
     apellido: Usuario.apellido,
-    correo: Usuario.correo // Agregar el correo del usuario
-  };
+    correo: Usuario.correo,
+    rol: Usuario.rol
+  });else {
+  res.status(401).json({ message: 'Usuario no existe' });
+  }
+  
+  console.log('Datos sesion: ', req.session.user);
 
   res.status(200).json({ message: 'Inicio de sesión exitoso',
-  usuario: req.session.user // Enviar los datos del usuari
+  usuario: req.session.user // Enviar los datos del usuario
    });
 });
 
-// Agregar la ruta para cerrar sesión
+//ruta para devolver el usuario de la sesión
+app.get('/sesion-usuario', (req, res) => {
+  if (req.session.user) {
+    res.json(req.session.user);
+  } else {
+    res.status(401).json({ message: 'No estás autenticado' });
+  }
+});
+
+// cerrar sesión
 app.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: 'Error al cerrar sesión' });
     }
+    console.log('Sesión cerrada exitosamente');
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
   });
 });
@@ -294,7 +322,7 @@ app.get('/productos', (req, res) => {
 // ruta para editar productos
 app.put('/editar-productos/:id', (req, res) => {
   const id = parseInt(req.params.id);
-  const { nombre, precio, stock } = req.body;
+  const { nombre, precio, stock, estado_id } = req.body;
 
   // verifica si el producto existe
   connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
@@ -310,7 +338,7 @@ app.put('/editar-productos/:id', (req, res) => {
     }
 
     // si el producto existe se actualiza
-    connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ? WHERE id = ?', [nombre, precio, stock, id], (error, results) => {
+    connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ?, estado_id = ? WHERE id = ?', [nombre, precio, stock, estado_id, id], (error, results) => {
       if (error) {
         console.error('Error al actualizar el producto:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -318,7 +346,7 @@ app.put('/editar-productos/:id', (req, res) => {
       }
 
       // Devuelve el producto actualizado
-      res.json({ id, nombre, precio, stock });
+      res.json({ id, nombre, precio, stock, estado_id });
     });
   });
 });
@@ -480,8 +508,19 @@ app.get('/categorias', (req, res) => {
   });
 });
 
+//ruta para obtener el estado del producto
+app.get('/estado-producto', (req, res) => {
+  connection.query('SELECT * FROM Estado_producto', (error, results) => {
+    if (error) {
+      console.error('Error al obtener los productos:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+    res.json(results);
+  });
+});
 
-// Ruta para obtener las categorías de la base de datos
+// Ruta para obtener las marcas de la base de datos
 app.get('/marcas', (req, res) => {
   connection.query('SELECT * FROM Marca', (error, marcas) => {
     if (error) {
