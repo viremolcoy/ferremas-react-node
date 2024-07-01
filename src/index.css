@@ -37,6 +37,15 @@ a{
   margin-top: 10px;
 }
 
+.cantidad-container {
+  font-size: 1rem; /* Tamaño del texto */
+  height: 2.5rem; /* Asegúrate de que el contenedor tenga la misma altura que los botones */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
 @media (max-width: 992px) {
   .icon-container {
     flex: 0 1 calc(100% / 4 - 10px); /* Ajustar tamaño para pantallas medianas */

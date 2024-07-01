@@ -17,7 +17,7 @@ app.use(cors());
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'admin',
+  password: 'nano2004',
   database: 'ferremas'
 });
 
@@ -224,6 +224,36 @@ app.get('/commit-transaccion', async (req, res) => {
   }
 });
 //fin webpay
+
+
+// Ruta para obtener las sucursales
+
+app.get('/sucursales', (req, res) => {
+  connection.query('SELECT * FROM sucursal', (error, results) => {
+    if (error) {
+      console.error('Error al obtener sucursales:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+
+// Ruta para obtener las direcciones de una sucursal específica
+app.get('/sucursales/:nombre', (req, res) => {
+  const { nombre } = req.params;
+  connection.query('SELECT direccion FROM Sucursal WHERE nombre = ?', [nombre], (error, results) => {
+    if (error) {
+      console.error('Error al obtener las direcciones de la sucursal:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+    const direcciones = results.map(result => result.direccion);
+    res.json(direcciones);
+  });
+});
+
 
 app.post('/limpiar-carrito', (req, res) => {
   // Este endpoint puede ser solo un placeholder ya que el carrito se maneja en el frontend

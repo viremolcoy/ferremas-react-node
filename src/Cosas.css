@@ -1,0 +1,12 @@
+/* styles.css */
+.border-selected {
+  border-width: 2px;
+  border-style: solid;
+  border-color: #6366f1; /* Indigo 500 */
+}
+
+.border-unselected {
+  border-width: 2px;
+  border-style: solid;
+  border-color: #d1d5db; /* Gray 300 */
+}

@@ -1,105 +1,15 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useContext } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { CarritoContext } from './CarritoContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CarritoDesplegable({ onClose }) {
   const [open, setOpen] = useState(true);
-  const { id } = useParams(); // Obtener el id del producto de los parámetros de la URL
-  const [carrito, setCarrito] = useState([]);
+  const { carrito, eliminarDelCarrito, incrementarCantidad, decrementarCantidad, calcularPrecioTotal } = useContext(CarritoContext);
   const [producto, setProducto] = useState(null);
-
-  useEffect(() => {
-    axios.get(`http://localhost:3307/productos/${id}`)
-      .then(response => {
-        console.log('Datos del producto:', response.data); // Verificar los datos recibidos
-        setProducto(response.data);
-      })
-      .catch(error => {
-        console.error('Error al obtener el producto:', error);
-      });
-  }, [id]);
-
-  useEffect(() => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    let carritoGuardado = [];
-    if (usuario) {
-      carritoGuardado = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
-    } else {
-      carritoGuardado = JSON.parse(localStorage.getItem('carrito')) || [];
-    }
-    setCarrito(carritoGuardado);
-  }, []);
-
-  const guardarCarritoEnLocalStorage = (carrito) => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (usuario) {
-      localStorage.setItem('carrito_' + usuario.id, JSON.stringify(carrito));
-    } else {
-      // Si no hay usuario autenticado, almacenar en un carrito global
-      localStorage.setItem('carrito', JSON.stringify(carrito));
-    }
-  };
-
-  const agregarAlCarrito = (producto) => {
-    console.log('Agregando al carrito:', producto); // Agregar este console.log
-    if (!producto) return;
-
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    let carritoActual = [];
-    if (usuario) {
-      carritoActual = JSON.parse(localStorage.getItem('carrito_' + usuario.id)) || [];
-    } else {
-      carritoActual = JSON.parse(localStorage.getItem('carrito')) || [];
-    }
-
-    const index = carritoActual.findIndex((item) => item.id === producto.id);
-    if (index !== -1) {
-      const nuevoCarrito = [...carritoActual];
-      nuevoCarrito[index].cantidad += 1;
-      carritoActual = nuevoCarrito;
-    } else {
-      carritoActual.push({ ...producto, cantidad: 1 });
-    }
-
-    guardarCarritoEnLocalStorage(carritoActual);
-    setCarrito(carritoActual);
-  };
-
-  const eliminarDelCarrito = (id) => {
-    const nuevoCarrito = carrito.filter((item) => item.id !== id);
-    guardarCarritoEnLocalStorage(nuevoCarrito);
-    setCarrito(nuevoCarrito);
-  };
-
-  const incrementarCantidad = (id) => {
-    const nuevoCarrito = carrito.map((item) => {
-      if (item.id === id) {
-        const nuevaCantidad = item.cantidad + 1;
-        return { ...item, cantidad: nuevaCantidad };
-      }
-      return item;
-    });
-    guardarCarritoEnLocalStorage(nuevoCarrito);
-    setCarrito(nuevoCarrito);
-  };
-
-  const decrementarCantidad = (id) => {
-    const nuevoCarrito = carrito.map((item) => {
-      if (item.id === id && item.cantidad > 1) {
-        const nuevaCantidad = item.cantidad - 1;
-        return { ...item, cantidad: nuevaCantidad };
-      }
-      return item;
-    });
-    guardarCarritoEnLocalStorage(nuevoCarrito);
-    setCarrito(nuevoCarrito);
-  };
-
-  const calcularPrecioTotal = () => {
-    return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
-  };
 
   const generarRutaImagen = (idProducto) => {
     return `${process.env.PUBLIC_URL}/imagenes/${idProducto}.jpeg`;
@@ -108,6 +18,14 @@ export default function CarritoDesplegable({ onClose }) {
   const handleClose = () => {
     setOpen(false);
     onClose();
+  };
+
+  const handleIncrementarCantidad = (item) => {
+    if (item.cantidad < item.stock) {
+      incrementarCantidad(item.id);
+    } else {
+      toast.error(`No hay suficiente stock de ${item.nombre}`, { autoClose: 3000 });
+    }
   };
 
   const handlePagar = async () => {
@@ -134,7 +52,6 @@ export default function CarritoDesplegable({ onClose }) {
       tokenInput.name = 'token_ws';
       tokenInput.value = token;
       form.appendChild(tokenInput);
-      console.log('Token:', token);
 
       document.body.appendChild(form);
       form.submit();
@@ -142,23 +59,6 @@ export default function CarritoDesplegable({ onClose }) {
       console.error('Error al crear la transacción:', error);
     }
   };
-
-  const limpiarCarrito = () => {
-    const usuario = JSON.parse(localStorage.getItem('usuario'));
-    if (usuario) {
-      localStorage.removeItem('carrito_' + usuario.id);
-    } else {
-      localStorage.removeItem('carrito');
-    }
-    setCarrito([]);
-  };
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('compraRealizada') === 'true') {
-      limpiarCarrito();
-    }
-  }, []);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -188,8 +88,8 @@ export default function CarritoDesplegable({ onClose }) {
                 leaveTo="translate-x-full"
               >
                 <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
-                  <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
-                    <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+                  <div className="flex h-full flex-col overflow-y-auto bg-white shadow-xl">
+                    <div className="flex-1 px-4 py-6 sm:px-6">
                       <div className="flex items-start justify-between">
                         <Dialog.Title className="text-lg font-medium text-gray-900">Mi Carrito</Dialog.Title>
                         <div className="ml-3 flex h-7 items-center">
@@ -206,37 +106,46 @@ export default function CarritoDesplegable({ onClose }) {
                       </div>
                       {carrito.length > 0 ? (
                         carrito.map((item) => (
-                          <div className="mt-8" key={item.id}>
+                          <div className="mt-4" key={item.id}>
                             <div className="flow-root">
                               <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                <li className="flex py-6">
-                                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                <li className="flex py-4">
+                                  <div className="h-28 w-28 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <img src={generarRutaImagen(item.id)} alt={item.nombre} className="h-full w-full object-cover object-center"/>
                                   </div>
-                                  <div className="ml-4 flex flex-1 flex-col">
+                                  <div className="ml-3 flex flex-1 flex-col">
                                     <div>
                                       <div className="flex justify-between text-base font-medium text-gray-900">
-                                        <h3>
+                                        <h5>
                                           <a href="">{item.nombre}</a>
-                                        </h3>
-                                        <p className="ml-4">{Number(item.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
+                                        </h5>
+                                        <p className="ml-3">{Number(item.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
                                       </div>
+                                      <p className="text-gray-500">Stock: {item.stock}</p>
                                     </div>
-                                    <div className="flex flex-1 items-end justify-between text-sm">
-                                      <div>
-                                        <button onClick={() => decrementarCantidad(item.id)}>-</button>
-                                        <p className="text-gray-500">Cantidad {item.cantidad}</p>
-                                        <button onClick={() => incrementarCantidad(item.id)}>+</button>
-                                      </div>
-                                      <div className="flex">
+                                    <div className="flex flex-col items-start mt-0">
+                                      <div className="flex items-center space-x-2">
                                         <button
-                                          type="button"
-                                          className="font-medium text-indigo-600 hover:text-indigo-500"
-                                          onClick={() => eliminarDelCarrito(item.id)}
+                                          onClick={() => decrementarCantidad(item.id)}
+                                          className="bg-red-400 px-2 py-0.5 rounded text-black"
                                         >
-                                          Eliminar
+                                          -
+                                        </button>
+                                        <p className="text-black-500 bg-gray-100 rounded py-0 px-0 text-lg mb-0">x{item.cantidad}</p>
+                                        <button
+                                          onClick={() => handleIncrementarCantidad(item)}
+                                          className="bg-green-400 px-2 py-0.5 rounded text-black"
+                                        >
+                                          +
                                         </button>
                                       </div>
+                                      <button
+                                        type="button"
+                                        className="mt-2 font-medium text-indigo-600 hover:text-indigo-500"
+                                        onClick={() => eliminarDelCarrito(item.id)}
+                                      >
+                                        Eliminar
+                                      </button>
                                     </div>
                                   </div>
                                 </li>
@@ -251,12 +160,12 @@ export default function CarritoDesplegable({ onClose }) {
                       )}
                     </div>
 
-                    <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                    <div className="border-t border-gray-200 px-4 py-4 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                         <h3>Total: {Number(calcularPrecioTotal()).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</h3>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">Tus compras pueden estar sujetas a impuestos</p>
-                      <div className="mt-6">
+                      <div className="mt-4">
                         <button onClick={handlePagar}
                           type="submit"
                           className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -264,7 +173,7 @@ export default function CarritoDesplegable({ onClose }) {
                           Ir a pagar
                         </button>
                       </div>
-                      <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
+                      <div className="mt-4 flex justify-center text-center text-sm text-gray-500">
                         <p>
                           o{' '}
                           <button

@@ -1,6 +1,6 @@
-import { Fragment, useState, useEffect} from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, BellIcon, XMarkIcon, ShoppingCartIcon} from '@heroicons/react/24/outline';
+import { Bars3Icon, BellIcon, XMarkIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/img/logo.png';
 import dualipa from '../assets/img/dualipa.jpg';
 import user from '../assets/img/user.png';

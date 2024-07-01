@@ -21,6 +21,9 @@ import Medicion from './views/Medicion.js';
 import Industriales from './views/Industriales.js';
 import Nosotros from './views/Nosotros.js';
 import Compra from './views/Compra.js';
+import Cosas from './views/Cosas.js';
+import Aaaa from './views/aaaa.js'
+import Transferencia from './views/Transferencia.js';
 
 const router = createBrowserRouter([
   {
@@ -36,8 +39,20 @@ const router = createBrowserRouter([
     element: <CompraRealizada />
   },
   {
+    path: '/Cosas',
+    element: <Cosas />
+  },
+  {
+    path: '/Aaaa',
+    element: <Aaaa />
+  },
+  {
     path: '/errorCompra',
     element: <ErrorCompra />    
+  },
+  {
+    path: '/Transferencia',
+    element: <Transferencia />    
   },
   {
     path: '/productos',
