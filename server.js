@@ -22,7 +22,7 @@ app.use(cors({
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'nano2004',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -401,7 +401,7 @@ app.post('/agregar-producto', upload.single('imagen'), (req, res) => {
   const imagenTemp = req.file.filename;
 
   connection.query(
-    'INSERT INTO Producto (nombre, precio, stock, descripcion, categoria_id, marca_id) VALUES (?, ?, ?, ?, ?, ?)', 
+    'INSERT INTO Producto (nombre, precio, stock, descripcion, categoria_id, marca_id, estado_id) VALUES (?, ?, ?, ?, ?, ?, 1)', 
     [nombre, precio, stock, descripcion, categoria_id, marca_id], 
     (error, results) => {
       if (error) {
