@@ -286,11 +286,44 @@ app.post('/limpiar-carrito', (req, res) => {
 
 
 // Ruta para obtener los productos de la base de datos
+app.get('/productos-todos', (req, res) => {
+  const { categorias, marcas } = req.query;
+
+  let query = 'SELECT * FROM Producto WHERE 1=1';
+  let queryParams = [];
+
+  if (categorias) {
+    const categoriasArray = categorias.split(',');
+    query += ' AND categoria_id IN (?)';
+    queryParams.push(categoriasArray);
+  }
+
+  if (marcas) {
+    const marcasArray = marcas.split(',');
+    query += ' AND marca_id IN (?)';
+    queryParams.push(marcasArray);
+  }
+
+  connection.query(query, queryParams, (error, results) => {
+    if (error) {
+      console.error('Error al obtener los productos:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+      return;
+    }
+    res.json(results);
+  });
+});
+
+// Ruta para obtener solo los productos con estado disponible 
 app.get('/productos', (req, res) => {
   const { categorias, marcas } = req.query;
 
   let query = 'SELECT * FROM Producto WHERE 1=1';
   let queryParams = [];
+
+    const estadoDisponibleId = 1; 
+    query += ' AND estado_id = 1';
+    queryParams.push(estadoDisponibleId);
 
   if (categorias) {
     const categoriasArray = categorias.split(',');
