@@ -132,46 +132,107 @@ const CheckoutForm = () => {
     setIsDialogOpen(false);
   };
 
+
+  
   const handleConfirm = async () => {
-    if (pago === 'webpay') {
-      await handleWebpay();
-    } else if (pago === 'transferencia') {
-      navigate('/Transferencia', { state: { total: calcularPrecioTotal() } });
+    const despachoData = formData.despacho === 'domicilio'
+      ? {
+          tipoDespacho: 1,
+          direccion: `${formData.direccionDespacho}, ${formData.comuna}, ${formData.region}`
+        }
+      : {
+          tipoDespacho: 2,
+          sucursalId: sucursales.find(s => s.nombre === formData.sucursal)?.id,
+          direccion: formData.direccionSucursal
+        };
+  
+    const pedidoData = {
+      cliente: JSON.stringify({
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        rut: formData.rut,
+        direccion: formData.direccionCliente,
+        telefono: `9${formData.telefono}`
+      }),
+      carrito: JSON.stringify(carrito.map(item => ({
+        productoId: item.id,
+        cantidad: item.cantidad,
+        precioUnitario: item.precio,
+        subtotal: item.precio * item.cantidad
+      }))),
+      despacho: JSON.stringify(despachoData)
+    };
+  
+    try {
+      if (pago === 'webpay') {
+        await handleWebpay(pedidoData);
+      } else {
+        navigate('/Transferencia', { state: { total: calcularPrecioTotal(), ...pedidoData } });
+      }
+    } catch (error) {
+      console.error('Error al procesar el pedido:', error);
+      alert('Hubo un problema al procesar tu pedido. Inténtalo nuevamente.');
     }
   };
-
+  
   const handleWebpay = async () => {
     const buyOrder = `O-${Date.now()}`;
     const sessionId = `S-${Date.now()}`;
     const amount = calcularPrecioTotal();
-    const returnUrl = 'http://localhost:3307/commit-transaccion';
-
+    
+    const despachoData = formData.despacho === 'domicilio'
+      ? {
+          tipoDespacho: 1,
+          direccion: `${formData.direccionDespacho}, ${formData.comuna}, ${formData.region}`
+        }
+      : {
+          tipoDespacho: 2,
+          sucursalId: sucursales.find(s => s.nombre === formData.sucursal)?.id,
+          direccion: formData.direccionSucursal
+        };
+  
+    const pedidoData = {
+      buyOrder,
+      sessionId,
+      amount,
+      cliente: JSON.stringify({
+        nombre: formData.nombre,
+        apellido: formData.apellido,
+        rut: formData.rut,
+        direccion: formData.direccionCliente,
+        telefono: `9${formData.telefono}`
+      }),
+      carrito: JSON.stringify(carrito.map(item => ({
+        productoId: item.id,
+        cantidad: item.cantidad,
+        precioUnitario: item.precio,
+        subtotal: item.precio * item.cantidad
+      }))),
+      despacho: JSON.stringify(despachoData)
+    };
+  
     try {
-      const response = await axios.post('http://localhost:3307/crear-transaccion', {
-        buyOrder,
-        sessionId,
-        amount,
-        returnUrl
-      });
-
+      const response = await axios.post('http://localhost:3307/crear-transaccion', pedidoData);
       const { token, url } = response.data;
+  
       const form = document.createElement('form');
       form.action = url;
       form.method = 'POST';
-
+  
       const tokenInput = document.createElement('input');
       tokenInput.type = 'hidden';
       tokenInput.name = 'token_ws';
       tokenInput.value = token;
       form.appendChild(tokenInput);
-
+  
       document.body.appendChild(form);
       form.submit();
     } catch (error) {
       console.error('Error al crear la transacción:', error);
     }
   };
-
+  
+  
   const verificarDatos = () => {
     const { nombre, apellido, rut, direccionCliente, telefono, despacho, region, comuna, direccionDespacho, sucursal, direccionSucursal } = formData;
     if (!nombre || !apellido || !rut || !direccionCliente || !telefono || !despacho || !pago) {

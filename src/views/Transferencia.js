@@ -4,6 +4,7 @@ import { Dialog, DialogPanel, DialogTitle, Transition } from '@headlessui/react'
 import { ExclamationTriangleIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import Footer from './Footer';
 import { CarritoContext } from './CarritoContext';
+import axios from 'axios';
 
 function generateRandomMessage() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -24,6 +25,9 @@ export default function Transferencia() {
   const [randomMessage, setRandomMessage] = useState(generateRandomMessage());
   const { vaciarCarrito } = useContext(CarritoContext);
   const total = location.state?.total || 0;
+  const cliente = location.state?.cliente || '';
+  const carrito = location.state?.carrito || '';
+  const despacho = location.state?.despacho || '';
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -66,10 +70,27 @@ export default function Transferencia() {
     setIsCancelled(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     if (isReceived) {
-      vaciarCarrito();
-      window.location.href = '/';
+      try {
+        const response = await axios.post('http://localhost:3307/confirmar-transferencia', {
+          email: formData.email,
+          total: total,
+          mensaje: randomMessage,
+          cliente,
+          carrito,
+          despacho
+        });
+        if (response.status === 200) {
+          setIsReceived(true);
+          vaciarCarrito();
+          window.location.href = '/';
+        } else {
+          alert('Hubo un problema al procesar tu pago. Inténtalo nuevamente.');
+        }
+      } catch (error) {
+        console.error('Error al confirmar el pago por transferencia:', error);
+      }
     } else {
       window.location.href = '/';
     }

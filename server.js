@@ -15,24 +15,25 @@ app.use(express.json());
 
 app.use(cors({
   origin: 'http://localhost:3000',
-  credentials: true // Habilita el envío de cookies
+  credentials: true
 }));
 
 // Configuración de la conexión a la base de datos
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Lula7553',
+  password: 'nano2004',
   database: 'ferremas'
 });
 
-// Configuración de sesiones
 app.use(session({
-  secret: 'ferre', // Cambia esto a un secreto seguro
+  secret: 'ferre',
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false } // Cambia a true si usas HTTPS
 }));
+
+
 
 connection.connect(err => {
   if (err) {
@@ -42,10 +43,10 @@ connection.connect(err => {
   console.log('Conexión exitosa a la base de datos MySQL');
 });
 
+// Rutas de usuario
+
 app.post('/ini-sesion', async (req, res) => {
   const { correo, clave } = req.body;
-
-  // Buscar el usuario en la base de datos
   const query = `
     SELECT Usuario.*, tipo_usuario.descripcion AS rol
     FROM Usuario
@@ -65,30 +66,20 @@ app.post('/ini-sesion', async (req, res) => {
     return res.status(401).json({ message: 'Usuario no existe' });
   }
 
-  // Comprobar la contraseña
   if (clave !== Usuario.clave) {
     return res.status(401).json({ message: 'Contraseña incorrecta' });
   }
 
-  // Guardar el usuario en la sesión
-  if (req.session.user = {
+  req.session.user = {
     id: Usuario.id,
     nombre: Usuario.nombre,
     apellido: Usuario.apellido,
     correo: Usuario.correo,
     rol: Usuario.rol
-  });else {
-  res.status(401).json({ message: 'Usuario no existe' });
-  }
-  
-  console.log('Datos sesion: ', req.session.user);
-
-  res.status(200).json({ message: 'Inicio de sesión exitoso',
-  usuario: req.session.user // Enviar los datos del usuario
-   });
+  };
+  res.status(200).json({ message: 'Inicio de sesión exitoso', usuario: req.session.user });
 });
 
-//ruta para devolver el usuario de la sesión
 app.get('/sesion-usuario', (req, res) => {
   if (req.session.user) {
     res.json(req.session.user);
@@ -97,22 +88,17 @@ app.get('/sesion-usuario', (req, res) => {
   }
 });
 
-// cerrar sesión
 app.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: 'Error al cerrar sesión' });
     }
-    console.log('Sesión cerrada exitosamente');
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
   });
 });
 
-
 app.post('/registro-usuario', async (req, res) => {
   const { nombre, apellido, rut, correo, clave } = req.body;
-
-  // verificar si el correo existe en la bd
   const checkQuery = 'SELECT * FROM Usuario WHERE correo = ?';
   connection.query(checkQuery, [correo], (error, results) => {
     if (error) {
@@ -121,7 +107,6 @@ app.post('/registro-usuario', async (req, res) => {
     } else if (results.length > 0) {
       res.status(400).json({ message: 'El correo ya está registrado' });
     } else {
-      // si no existe el correo se inserta el nuevo usuario
       const insertQuery = 'INSERT INTO Usuario (nombre, apellido, rut, correo, clave, Tipo_usuario_id) VALUES (?, ?, ?, ?, ?, 1)';
       connection.query(insertQuery, [nombre, apellido, rut, correo, clave], (error, results) => {
         if (error) {
@@ -135,8 +120,7 @@ app.post('/registro-usuario', async (req, res) => {
   });
 });
 
-
-//webpay
+// Configuración Webpay
 WebpayPlus.configureForIntegration(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration);
 
 app.post('/create', async (req, res) => {
@@ -149,45 +133,16 @@ app.post('/create', async (req, res) => {
       token: response.token,
       returnUrl: response.returnUrl
     });
-    console.log("create url: ", response.url);
-    console.log("create token: ", response.token);
-    console.log("create return: ", response.returnUrl);
   } catch (error) {
     console.error('Error al crear la transacción:', error);
     res.status(500).json({ error: 'Error al crear la transacción' });
   }
 });
 
-// Ruta para obtener las categorías de la base de datos y formatearlas como filtros
-app.get('/filters', (req, res) => {
-  connection.query('SELECT * FROM Categoria', (error, results) => {
-    if (error) {
-      console.error('Error al obtener las categorías:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
-      return;
-    }
-
-    const filters = [
-      {
-        id: 'category',
-        name: 'Category',
-        options: results.map(category => ({
-          value: category.id,
-          label: category.descripcion, // Asumiendo que tienes una columna 'descripcion' en la tabla 'Categoria'
-          checked: false // Inicialmente, ninguna categoría está seleccionada
-        }))
-      }
-    ];
-
-    res.json(filters);
-  });
-});
-
 app.post('/commit', async (req, res) => {
   const { token } = req.body;
   try {
     const response = await WebpayPlus.Transaction.commit(token);
-    console.log("commit: ", response);
     res.json(response);
   } catch (error) {
     console.error('Error al confirmar la transacción:', error);
@@ -196,61 +151,109 @@ app.post('/commit', async (req, res) => {
 });
 
 app.post('/crear-transaccion', async (req, res) => {
-  const { buyOrder, sessionId, amount, returnUrl } = req.body;
-  try {
-    const tx = new WebpayPlus.Transaction();
-    const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
-    res.json(response);
-    console.log("create url: ", response.url);
-    console.log("create token: ", response.token);
-  } catch (error) {
-    console.error('Error al crear la transacción:', error);
-    res.status(500).json({ error: 'Error al crear la transacción' });
-  }
+  const { buyOrder, sessionId, amount, cliente, carrito, despacho } = req.body;
+
+  const insertQuery = `
+    INSERT INTO pedidos_temporales (buyOrder, sessionId, amount, cliente, carrito, despacho)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  connection.query(insertQuery, [buyOrder, sessionId, amount, cliente, carrito, despacho], async (error, results) => {
+    if (error) {
+      console.error('Error al insertar en la tabla pedidos_temporales:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+    
+    const returnUrl = `http://localhost:3307/commit-transaccion?buyOrder=${buyOrder}&sessionId=${sessionId}`;
+
+    try {
+      const tx = new WebpayPlus.Transaction();
+      const response = await tx.create(buyOrder, sessionId, amount, returnUrl);
+      res.json(response);
+    } catch (error) {
+      console.error('Error al crear la transacción:', error);
+      res.status(500).json({ error: 'Error al crear la transacción' });
+    }
+  });
 });
 
-app.get('/commit-transaccion', async (req, res) => {
-  const { token_ws } = req.query;
 
-  console.log('Token recibido:', token_ws);
+app.get('/commit-transaccion', async (req, res) => {
+  const { token_ws, buyOrder, sessionId } = req.query;
 
   if (!token_ws || token_ws.trim() === '') {
     console.error('Error: token no puede ser nulo o una cadena vacía');
-    res.status(400).redirect('http://localhost:3000/errorCompra');
-    return;
+    return res.status(400).redirect('http://localhost:3000/errorCompra');
   }
+
   try {
     const tx = new WebpayPlus.Transaction();
     const response = await tx.commit(token_ws);
+
     console.log('Respuesta recibida:', response);
-    console.log('Número órden de compra:', response.buy_order);
-    console.log('Monto de compra:', response.amount);
-    console.log('Tarjeta:', response.card_detail);
-    console.log('Fecha:', response.transaction_date);
+
     if (response.response_code === 0) {
-      //poner los datos del response en la url
-      const queryParams = new URLSearchParams({
-        buy_order: response.buy_order,
-        amount: response.amount,
-        card_detail: JSON.stringify(response.card_detail),
-        transaction_date: response.transaction_date,
-        installments_number : response.installments_number,
-        compraRealizada: 'true' // Añadir este parámetro
-      }).toString();
-      res.redirect(`http://localhost:3000/compraRealizada?${queryParams}`);
+      const selectQuery = `
+        SELECT cliente, carrito, despacho
+        FROM pedidos_temporales
+        WHERE buyOrder = ? AND sessionId = ?
+      `;
+      connection.query(selectQuery, [buyOrder, sessionId], async (error, results) => {
+        if (error || results.length === 0) {
+          console.error('Error al obtener datos del pedido temporal:', error);
+          return res.status(500).redirect('http://localhost:3000/errorCompra');
+        }
+
+        const { cliente, carrito, despacho } = results[0];
+        const parsedCliente = JSON.parse(cliente);
+        const parsedCarrito = JSON.parse(carrito);
+        const parsedDespacho = JSON.parse(despacho);
+        const paymentType = response.payment_type_code;
+        let tipoPago;
+
+        switch (paymentType) {
+          case 'VD': // Venta débito
+            tipoPago = 1;
+            break;
+          case 'VN': // Venta normal (crédito)
+          case 'VC': // Venta en cuotas
+          case 'SI': // 3 cuotas sin interés
+          case 'S2': // 2 cuotas sin interés
+          case 'NC': // N cuotas sin interés
+          case 'VP': // Venta Prepago
+            tipoPago = 2;
+            break;
+          default:
+            tipoPago = 1; // Default to debit if unknown
+        }
+
+        const pago = { total: response.amount, tipoPago }; // Asignar el tipo de pago basado en el tipo de tarjeta
+
+        try {
+          await procesarPedido(parsedCliente, parsedCarrito, parsedDespacho, pago, 'Confirmado');
+          const queryParams = new URLSearchParams({
+            buy_order: response.buy_order,
+            amount: response.amount,
+            card_detail: JSON.stringify(response.card_detail),
+            transaction_date: response.transaction_date,
+            installments_number: response.installments_number,
+            compraRealizada: 'true'
+          }).toString();
+          res.redirect(`http://localhost:3000/compraRealizada?${queryParams}`);
+        } catch (error) {
+          console.error('Error al procesar el pedido:', error);
+          res.status(500).redirect('http://localhost:3000/errorCompra');
+        }
+      });
     } else {
       res.redirect('http://localhost:3000/errorCompra');
     }
   } catch (error) {
     console.error('Error al confirmar la transacción:', error);
-    console.log('Error al confirmar la transacción:', error);
     res.status(500).redirect('http://localhost:3000/errorCompra');
   }
 });
-//fin webpay
 
-
-// Ruta para obtener las sucursales
+// Rutas adicionales
 
 app.get('/sucursales', (req, res) => {
   connection.query('SELECT * FROM sucursal', (error, results) => {
@@ -263,8 +266,6 @@ app.get('/sucursales', (req, res) => {
   });
 });
 
-
-// Ruta para obtener las direcciones de una sucursal específica
 app.get('/sucursales/:nombre', (req, res) => {
   const { nombre } = req.params;
   connection.query('SELECT direccion FROM Sucursal WHERE nombre = ?', [nombre], (error, results) => {
@@ -278,14 +279,10 @@ app.get('/sucursales/:nombre', (req, res) => {
   });
 });
 
-
 app.post('/limpiar-carrito', (req, res) => {
-  // Este endpoint puede ser solo un placeholder ya que el carrito se maneja en el frontend
   res.status(200).json({ message: 'Carrito limpio' });
 });
 
-
-// Ruta para obtener los productos de la base de datos
 app.get('/productos-todos', (req, res) => {
   const { categorias, marcas } = req.query;
 
@@ -314,16 +311,15 @@ app.get('/productos-todos', (req, res) => {
   });
 });
 
-// Ruta para obtener solo los productos con estado disponible 
 app.get('/productos', (req, res) => {
   const { categorias, marcas } = req.query;
 
   let query = 'SELECT * FROM Producto WHERE 1=1';
   let queryParams = [];
 
-    const estadoDisponibleId = 1; 
-    query += ' AND estado_id = 1';
-    queryParams.push(estadoDisponibleId);
+  const estadoDisponibleId = 1;
+  query += ' AND estado_id = 1';
+  queryParams.push(estadoDisponibleId);
 
   if (categorias) {
     const categoriasArray = categorias.split(',');
@@ -347,13 +343,10 @@ app.get('/productos', (req, res) => {
   });
 });
 
-
-// ruta para editar productos
 app.put('/editar-productos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const { nombre, precio, stock, estado_id } = req.body;
 
-  // verifica si el producto existe
   connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
     if (error) {
       console.error('Error al obtener el producto:', error);
@@ -366,7 +359,6 @@ app.put('/editar-productos/:id', (req, res) => {
       return;
     }
 
-    // si el producto existe se actualiza
     connection.query('UPDATE Producto SET nombre = ?, precio = ?, stock = ?, estado_id = ? WHERE id = ?', [nombre, precio, stock, estado_id, id], (error, results) => {
       if (error) {
         console.error('Error al actualizar el producto:', error);
@@ -374,17 +366,14 @@ app.put('/editar-productos/:id', (req, res) => {
         return;
       }
 
-      // Devuelve el producto actualizado
       res.json({ id, nombre, precio, stock, estado_id });
     });
   });
 });
 
-
 app.delete('/eliminar-producto/:id', (req, res) => {
   const id = parseInt(req.params.id);
 
-  // verifica si el producto existe
   connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
     if (error) {
       console.error('Error al obtener el producto:', error);
@@ -397,7 +386,6 @@ app.delete('/eliminar-producto/:id', (req, res) => {
       return;
     }
 
-    // si existe se borra 
     connection.query('DELETE FROM Producto WHERE id = ?', [id], (error, results) => {
       if (error) {
         console.error('Error al eliminar el producto:', error);
@@ -410,7 +398,6 @@ app.delete('/eliminar-producto/:id', (req, res) => {
   });
 });
 
-// para subir imágenes y wardarlas en la carpeta
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/imagenes')
@@ -418,11 +405,10 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
   }
-})
+});
 
 app.use('/imagenes', express.static(path.join(__dirname, 'public/imagenes')));
-const upload = multer({ storage: storage })
-
+const upload = multer({ storage: storage });
 
 app.post('/agregar-producto', upload.single('imagen'), (req, res) => {
   const { nombre, precio, stock, descripcion, categoria_id, marca_id } = req.body;
@@ -444,10 +430,9 @@ app.post('/agregar-producto', upload.single('imagen'), (req, res) => {
       }
 
       const productoId = results.insertId;
-      const imagenFinal = `${productoId}.jpeg`; // Forzar la extensión a .jpeg
+      const imagenFinal = `${productoId}.jpeg`;
       const imagenRuta = path.join(__dirname, 'public/imagenes', imagenFinal);
 
-      // Renombrar la imagen temporal
       fs.rename(path.join(__dirname, 'public/imagenes', imagenTemp), imagenRuta, (err) => {
         if (err) {
           console.error('Error al renombrar la imagen:', err);
@@ -462,10 +447,6 @@ app.post('/agregar-producto', upload.single('imagen'), (req, res) => {
   );
 });
 
-
-
-
-// Ruta para obtener los detalles de un producto por su ID
 app.get('/productos/:id', (req, res) => {
   const { id } = req.params;
   connection.query('SELECT * FROM Producto WHERE id = ?', [id], (error, results) => {
@@ -478,7 +459,6 @@ app.get('/productos/:id', (req, res) => {
       res.status(404).json({ error: 'Producto no encontrado' });
       return;
     }
-    console.log('Producto encontrado:', results[0]);
     const producto = results[0];
     connection.query('SELECT descripcion AS categoria_descripcion FROM Categoria WHERE id = ?', [producto.categoria_id], (error, categoriaResults) => {
       if (error) {
@@ -487,7 +467,6 @@ app.get('/productos/:id', (req, res) => {
         return;
       }
       if (categoriaResults.length === 0) {
-        console.error('No se encontró la categoría correspondiente al producto:', producto);
         res.status(500).json({ error: 'Error interno del servidor' });
         return;
       }
@@ -498,7 +477,6 @@ app.get('/productos/:id', (req, res) => {
   });
 });
 
-// Ruta para obtener los clientes de la base de datos
 app.get('/clientes', (req, res) => {
   connection.query('SELECT * FROM Cliente', (error, results) => {
     if (error) {
@@ -517,7 +495,6 @@ app.get('/categorias', (req, res) => {
       res.status(500).json({ error: 'Error interno del servidor' });
       return;
     }
-    console.log('Categorías obtenidas:', categorias);
     let completedQueries = 0;
     categorias.forEach((categoria, index) => {
       connection.query('SELECT * FROM Producto WHERE categoria_id = ?', [categoria.id], (err, productos) => {
@@ -529,7 +506,6 @@ app.get('/categorias', (req, res) => {
         categoria.productos = productos;
         completedQueries++;
         if (completedQueries === categorias.length) {
-          console.log('Categorías con productos:', categorias);
           res.json(categorias);
         }
       });
@@ -537,7 +513,6 @@ app.get('/categorias', (req, res) => {
   });
 });
 
-//ruta para obtener el estado del producto
 app.get('/estado-producto', (req, res) => {
   connection.query('SELECT * FROM Estado_producto', (error, results) => {
     if (error) {
@@ -549,7 +524,6 @@ app.get('/estado-producto', (req, res) => {
   });
 });
 
-// Ruta para obtener las marcas de la base de datos
 app.get('/marcas', (req, res) => {
   connection.query('SELECT * FROM Marca', (error, marcas) => {
     if (error) {
@@ -577,7 +551,7 @@ app.get('/marcas', (req, res) => {
 
 app.post('/productos/filtrar', (req, res) => {
   const { categorias, marcas } = req.body;
-  let query = 'SELECT id, nombre, precio FROM Producto WHERE 1=1';
+  let query = 'SELECT id, nombre, precio FROM Producto WHERE 1=1 AND estado_id=1';
   let params = [];
 
   if (categorias.length > 0) {
@@ -600,6 +574,126 @@ app.post('/productos/filtrar', (req, res) => {
   });
 });
 
+
+async function procesarPedido(cliente, carrito, despacho, pago, estadoPago) {
+  return new Promise((resolve, reject) => {
+    connection.beginTransaction(err => {
+      if (err) {
+        return reject('Error al iniciar la transacción');
+      }
+
+      const clienteQuery = 'INSERT INTO cliente (nombre, apellido, rut, direccion, telefono) VALUES (?, ?, ?, ?, ?)';
+      connection.query(clienteQuery, [cliente.nombre, cliente.apellido, cliente.rut, cliente.direccion, cliente.telefono], (error, clienteResults) => {
+        if (error) {
+          return connection.rollback(() => reject('Error al insertar en la tabla cliente'));
+        }
+        const clienteId = clienteResults.insertId;
+
+        const boletaQuery = 'INSERT INTO boleta (fecha, Cliente_id) VALUES (CURDATE(), ?)';
+        connection.query(boletaQuery, [clienteId], (error, boletaResults) => {
+          if (error) {
+            return connection.rollback(() => reject('Error al insertar en la tabla boleta'));
+          }
+          const boletaId = boletaResults.insertId;
+
+          const despachoQuery = 'INSERT INTO despacho (tipo_despacho, Boleta_id) VALUES (?, ?)';
+          connection.query(despachoQuery, [despacho.tipoDespacho, boletaId], (error, despachoResults) => {
+            if (error) {
+              return connection.rollback(() => reject('Error al insertar en la tabla despacho'));
+            }
+            const despachoId = despachoResults.insertId;
+
+            if (despacho.tipoDespacho === 1) {
+              const domicilioQuery = 'INSERT INTO domicilio (Despacho_id, direccion, seguimiento) VALUES (?, ?, ?)';
+              const seguimiento = Math.random().toString().slice(2, 18);
+              connection.query(domicilioQuery, [despachoId, despacho.direccion, seguimiento], error => {
+                if (error) {
+                  return connection.rollback(() => reject('Error al insertar en la tabla domicilio'));
+                }
+              });
+            } else if (despacho.tipoDespacho === 2) {
+              const tiendaQuery = 'INSERT INTO tienda (Sucursal_id, Despacho_id) VALUES (?, ?)';
+              connection.query(tiendaQuery, [despacho.sucursalId, despachoId], error => {
+                if (error) {
+                  return connection.rollback(() => reject('Error al insertar en la tabla tienda'));
+                }
+              });
+            }
+
+            const pagoQuery = 'INSERT INTO pago (total, Tipo_Pago_id, Boleta_id, estado_pago) VALUES (?, ?, ?, ?)';
+            connection.query(pagoQuery, [pago.total, pago.tipoPago, boletaId, estadoPago], error => {
+              if (error) {
+                return connection.rollback(() => reject('Error al insertar en la tabla pago'));
+              }
+            });
+
+            const detalleQueries = carrito.map(item => {
+              return new Promise((resolve, reject) => {
+                const detalleQuery = 'INSERT INTO detalle (cantidad, precio_unitario, subtotal, Producto_id, Boleta_id) VALUES (?, ?, ?, ?, ?)';
+                connection.query(detalleQuery, [item.cantidad, item.precioUnitario, item.subtotal, item.productoId, boletaId], error => {
+                  if (error) {
+                    return reject(error);
+                  }
+
+                  const actualizarStockQuery = 'UPDATE producto SET stock = stock - ? WHERE id = ?';
+                  connection.query(actualizarStockQuery, [item.cantidad, item.productoId], error => {
+                    if (error) {
+                      return reject(error);
+                    }
+                    resolve();
+                  });
+                });
+              });
+            });
+
+            Promise.all(detalleQueries)
+              .then(() => {
+                connection.commit(err => {
+                  if (err) {
+                    return connection.rollback(() => reject('Error al confirmar la transacción'));
+                  }
+                  resolve();
+                });
+              })
+              .catch(error => {
+                connection.rollback(() => reject('Error al procesar el pedido'));
+              });
+          });
+        });
+      });
+    });
+  });
+}
+
+
+app.post('/guardar-pedido', (req, res) => {
+  const { cliente, carrito, despacho } = req.body;
+  req.session.cliente = JSON.stringify(cliente);
+  req.session.carrito = JSON.stringify(carrito);
+  req.session.despacho = JSON.stringify(despacho);
+  console.log('Datos del pedido guardados en la sesión:', req.session);
+  res.status(200).json({ message: 'Datos del pedido guardados en la sesión' });
+});
+
+
+
+
+app.post('/confirmar-transferencia', async (req, res) => {
+  const { total, cliente, carrito, despacho } = req.body;
+
+  try {
+    const clienteData = JSON.parse(cliente);
+    const carritoData = JSON.parse(carrito);
+    const despachoData = JSON.parse(despacho);
+    const pago = { total, tipoPago: 3 }; // 2 para Transferencia
+
+    await procesarPedido(clienteData, carritoData, despachoData, pago, 'Por confirmar');
+    res.status(200).json({ message: 'Pago confirmado y pedido procesado' });
+  } catch (error) {
+    console.error('Error al confirmar el pago y procesar el pedido:', error);
+    res.status(500).json({ message: 'Error al confirmar el pago y procesar el pedido' });
+  }
+});
 
 
 const PORT = process.env.PORT || 3307;
