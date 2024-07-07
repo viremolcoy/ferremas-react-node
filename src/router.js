@@ -22,7 +22,6 @@ import Industriales from './views/Industriales.js';
 import Nosotros from './views/Nosotros.js';
 import Compra from './views/Compra.js';
 import Cosas from './views/Cosas.js';
-import Aaaa from './views/aaaa.js'
 import Transferencia from './views/Transferencia.js';
 import PrivateRoute from './PrivateRoute.js';
 import CheckoutForm from './views/Checkoutform.js';
@@ -43,10 +42,6 @@ const router = createBrowserRouter([
   {
     path: '/Cosas',
     element: <Cosas />
-  },
-  {
-    path: '/Aaaa',
-    element: <Aaaa />
   },
   {
     path: '/errorCompra',

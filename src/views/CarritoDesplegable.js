@@ -32,7 +32,11 @@ export default function CarritoDesplegable({ onClose }) {
   };
 
   const handlePagar = async () => {
-    navigate('/Cosas')
+    if (carrito.length > 0) {
+      navigate('/Cosas');
+    } else {
+      toast.error('Tu carrito está vacío. Por favor, agrega productos antes de proceder al pago.', { autoClose: 3000 });
+    }
   };
 
   return (

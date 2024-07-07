@@ -49,7 +49,7 @@ export default function VistaAdmin() {
     }, []);
 
     useEffect(() => {
-      axios.get('http://localhost:3307/productos')
+      axios.get('http://localhost:3307/productos-todos')
         .then(res => setProductos(res.data))
         .catch(err => console.error(err));
     }, []);
@@ -71,7 +71,7 @@ export default function VistaAdmin() {
       axios.put(`http://localhost:3307/editar-productos/${editProduc.id}`, updatedProduct)
         .then(res => {
           // actualiza los productos después de editar 
-          axios.get('http://localhost:3307/productos')
+          axios.get('http://localhost:3307/productos-todos')
             .then(res => setProductos(res.data))
             .catch(err => console.error(err));
           setIsModalOpen(false);
@@ -111,7 +111,7 @@ export default function VistaAdmin() {
       axios.post('http://localhost:3307/agregar-producto', formData)
         .then(res => {
           // actualiza los productos después de agregar
-          axios.get('http://localhost:3307/productos')
+          axios.get('http://localhost:3307/productos-todos')
             .then(res => setProductos(res.data))
             .catch(err => console.error(err));
           toast.success('Producto agregado correctamente', { autoClose: 4000 });
