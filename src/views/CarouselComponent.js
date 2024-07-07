@@ -12,7 +12,7 @@ const CarouselComponent = () => {
     <Carousel>
 
       <Carousel.Item>
-      <Link to="/Home">
+      <Link to="/Nosotros">
       <img
           className="d-block w-100"
           src={slider1}
