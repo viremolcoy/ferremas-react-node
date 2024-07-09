@@ -22,7 +22,7 @@ app.use(cors({
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'nano2004',
+  password: 'Lula7553',
   database: 'ferremas'
 });
 
@@ -316,10 +316,6 @@ app.get('/productos', (req, res) => {
 
   let query = 'SELECT * FROM Producto WHERE 1=1';
   let queryParams = [];
-
-  const estadoDisponibleId = 1;
-  query += ' AND estado_id = 1';
-  queryParams.push(estadoDisponibleId);
 
   if (categorias) {
     const categoriasArray = categorias.split(',');
