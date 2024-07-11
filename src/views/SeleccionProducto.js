@@ -8,10 +8,13 @@ import '../index.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CarritoContext } from './CarritoContext';
+import ProductosRecomendados from './ProductosRecomendados';
+
 function SeleccionProducto() {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
   const { agregarAlCarrito } = useContext(CarritoContext);
+  const { productoId } = useParams();
 
   useEffect(() => {
     axios.get(`http://localhost:3307/productos/${id}`)
@@ -36,9 +39,11 @@ function SeleccionProducto() {
     agregarAlCarrito(producto);
   };
 
-  if (!producto) {
-    return <div>Cargando...</div>;
-  }
+  if (!producto) return (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
+  );
 
   return (
     <div className="producto-detalles">
@@ -113,7 +118,7 @@ function SeleccionProducto() {
           </div>
         </div>
       </div>
-
+      <ProductosRecomendados productoId={producto.id} />
       <Footer />
     </div>
   );
