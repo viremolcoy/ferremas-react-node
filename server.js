@@ -22,7 +22,7 @@ app.use(cors({
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
-  password: 'Lula7553',
+  password: 'admin',
   database: 'ferremas'
 });
 
@@ -338,6 +338,42 @@ app.get('/productos', (req, res) => {
     res.json(results);
   });
 });
+
+//ruta para obtener los productos recomendados
+app.get('/productos/:productId/recomendado', (req, res) => {
+  const productId = req.params.productId;
+
+  // se obtiene la categoría del producto actual
+  const query = `
+    SELECT categoria_id FROM Producto WHERE id = ?
+  `;
+  
+  connection.query(query, [productId], (error, results) => {
+    if (error) {
+      return res.status(500).json({ message: 'Error al obtener la categoría del producto' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    const categoriaId = results[0].categoria_id;
+
+    // productos de la misma categoría excluyendo el producto actual
+    const recommendedQuery = `
+      SELECT * FROM Producto WHERE categoria_id = ? AND id != ? LIMIT 5
+    `;
+    
+    connection.query(recommendedQuery, [categoriaId, productId], (error, recommendedResults) => {
+      if (error) {
+        return res.status(500).json({ message: 'Error al obtener productos recomendados' });
+      }
+
+      res.status(200).json(recommendedResults);
+    });
+  });
+});
+
 
 app.put('/editar-productos/:id', (req, res) => {
   const id = parseInt(req.params.id);
