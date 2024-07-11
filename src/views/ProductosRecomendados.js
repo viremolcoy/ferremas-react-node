@@ -43,7 +43,7 @@ const ProductosRecomendados = ({ productoId }) => {
           {productosRecomendados.map(producto => (
             <Link to={`/producto/${producto.id}`} key={producto.id}>
             <div key={producto.id} className="border p-6 rounded-lg">
-              <img src={generarRutaImagen(producto.id)} alt={producto.nombre} className="w-7/12 h-auto object-cover" />
+              <img src={generarRutaImagen(producto.id)} alt={producto.nombre} className="w-8/12 h-40 object-cover" />
               <h3 className="text-lg font-semibold mb-2">{producto.nombre}</h3>
               <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
             </div>
