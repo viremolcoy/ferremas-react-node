@@ -39,8 +39,7 @@ export default function Example() {
   const [selectedSortOption, setSelectedSortOption] = useState(null);
   const [currentSortOrder, setCurrentSortOrder] = useState(null);
 
-  
-  
+  const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:3307/productos')
@@ -66,8 +65,6 @@ export default function Example() {
         console.error('Error al obtener las categorías:', error);
       });
   }, []);
-
-  
 
   // Función para obtener productos por categoría
   const getProductosPorCategoria = (categoriaId) => {
@@ -129,10 +126,6 @@ export default function Example() {
     }
   };
   
-  
-
-  
-
   const handleCheckboxChange = (id) => {
     setCategorias(prevCategorias =>
       prevCategorias.map(categoria =>
@@ -338,6 +331,13 @@ export default function Example() {
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-14">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">PRODUCTOS FERREMAS</h1>
+            <input 
+              type="text" 
+              value={busqueda} 
+              onChange={e => setBusqueda(e.target.value)} 
+              placeholder="Buscar productos..." 
+              className="p-2 border rounded"
+            />
             <div className="flex items-center">
             <Menu as="div" className="relative inline-block text-left">
   <div>
@@ -502,7 +502,7 @@ export default function Example() {
               <div className="bg-white">
                   <div className="mx-auto max-w-2xl px-4 py-0 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
                     <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                      {productos.map((producto) => (
+                     {productos.filter(producto => producto.nombre.toLowerCase().includes(busqueda.toLowerCase())).map(producto => (
                         <Link to={`/producto/${producto.id}`} key={producto.id}>
                           <div className="group relative">
                             <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-white lg:aspect-none group-hover:opacity-75 lg:h-80">
@@ -519,6 +519,9 @@ export default function Example() {
                                   <p className="text-sm font-medium text-gray-900">
                                     {Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                                   </p>
+                                  {producto.estado_id === 2 && (
+                                    <p className="text-sm text-red-500">Este producto no está disponible</p>
+                                  )}
                                 </h3>
                               </div>
                             </div>

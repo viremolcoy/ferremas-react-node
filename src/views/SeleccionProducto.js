@@ -8,10 +8,13 @@ import '../index.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CarritoContext } from './CarritoContext';
+import ProductosRecomendados from './ProductosRecomendados';
+
 function SeleccionProducto() {
   const { id } = useParams();
   const [producto, setProducto] = useState(null);
   const { agregarAlCarrito } = useContext(CarritoContext);
+  const { productoId } = useParams();
 
   useEffect(() => {
     axios.get(`http://localhost:3307/productos/${id}`)
@@ -36,9 +39,11 @@ function SeleccionProducto() {
     agregarAlCarrito(producto);
   };
 
-  if (!producto) {
-    return <div>Cargando...</div>;
-  }
+  if (!producto) return (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
+  );
 
   return (
     <div className="producto-detalles">
@@ -69,7 +74,7 @@ function SeleccionProducto() {
             </ol>
           </nav>
 
-          <div className="mx-auto mt-6 max-w-4xl sm:px-6 lg:max-w-7xl lg:px-8 grid grid-cols-1 lg:grid-cols-2">
+          <div className="mx-auto mt-6 max-w-4xl sm:px-6 lg:max-w-7xl lg:px-8 grid grid-cols-1 lg:grid-cols-2">              
             <div className="p-10 flex justify-center items-center">
               <img src={generarRutaImagen(producto.id)} alt={producto.nombre} className="w-full h-auto object-cover" />
             </div>
@@ -80,11 +85,26 @@ function SeleccionProducto() {
               </div>
               <p className="text-3xl tracking-tight text-gray-900">{Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}</p>
               <p className="text-2xl tracking-tight text-gray-900">Stock: {producto.stock}</p>
+
               <form className="mt-10" onSubmit={(e) => e.preventDefault()}>
-                <button type="button" onClick={() => handleAgregarAlCarrito(producto)} className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                  Añadir al carrito
-                </button>
+
+                {producto.estado_id === 2 && (
+                  <div className='mx-auto bg-red-500 rounded-full flex items-center text-center'>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-5.732-9.667a2 2 0 00-3.464 0L5.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  <h3 className=" text-white text-center">Este producto no está disponible </h3>
+                 </div>
+                )}
+
+              <button type="button" onClick={() => handleAgregarAlCarrito(producto)} 
+              className={`mt-10 flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${producto.estado_id === 2 ? 'bg-indigo-300 cursor-not-allowed' : 'bg-indigo-600'}`}
+              disabled={producto.estado_id === 2}>
+              Añadir al carrito
+            </button>
+
               </form>
+
               <div className="pt-10 lg:col-span-2 lg:col-start-1 lg:pb-16 lg:pr-8 lg:pt-6">
                 <div>
                   <h2 className="text-sm font-medium text-gray-900">Descripción</h2>
@@ -98,7 +118,7 @@ function SeleccionProducto() {
           </div>
         </div>
       </div>
-
+      <ProductosRecomendados productoId={producto.id} />
       <Footer />
     </div>
   );

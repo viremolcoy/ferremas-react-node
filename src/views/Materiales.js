@@ -63,6 +63,9 @@ export default function Materiales () {
                                     <p className="text-sm font-medium text-gray-900">
                                     {Number(producto.precio).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
                                     </p>
+                                    {producto.estado_id === 2 && (
+                                    <p className="text-sm text-red-500">Este producto no está disponible</p>
+                                  )}
                                 </h3>
                                 </div>
                             </div>
