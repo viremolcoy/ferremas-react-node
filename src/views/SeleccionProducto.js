@@ -49,7 +49,7 @@ function SeleccionProducto() {
             <ol role="list" className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
               <li>
                 <div className="flex items-center">
-                  <a href="#" className="mr-2 text-sm font-medium text-gray-900">Productos</a>
+                  <a href="/Productos" className="mr-2 text-sm font-medium text-gray-900">Productos</a>
                   <svg width="16" height="20" viewBox="0 0 16 20" fill="currentColor" aria-hidden="true" className="h-5 w-4 text-gray-300">
                     <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
                   </svg>
@@ -90,6 +90,14 @@ function SeleccionProducto() {
                     </svg>
                   <h3 className=" text-white text-center">Este producto no está disponible </h3>
                  </div>
+                )}
+                  {producto.stock === 0 && (
+                    <div className='mx-auto bg-red-500 rounded-full flex items-center text-center'>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3l-5.732-9.667a2 2 0 00-3.464 0L5.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <h2 className="text-xs text-white text-center">PRODUCTO SIN STOCK</h2>
+                    </div>
                 )}
 
               <button type="button" onClick={() => handleAgregarAlCarrito(producto)} 

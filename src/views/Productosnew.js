@@ -505,13 +505,19 @@ export default function Example() {
                       {productos.map((producto) => (
                         <Link to={`/producto/${producto.id}`} key={producto.id}>
                           <div className="group relative">
-                            <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-white lg:aspect-none group-hover:opacity-75 lg:h-80">
-                              <img
-                                src={generarRutaImagen(producto.id)}
-                                alt={producto.nombre}
-                                className="h-full w-full object-contain object-center lg:h-full lg:w-full"
-                              />
-                            </div>
+                          <div className="relative aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-white lg:aspect-none group-hover:opacity-75 lg:h-80">
+                            {producto.stock === 0 && (
+                              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 px-2 py-1 rounded">
+                                <p className="text-sm text-yellow-500 font-bold">SIN STOCK</p>
+                              </div>
+                            )}
+                            <img
+                              src={generarRutaImagen(producto.id)}
+                              alt={producto.nombre}
+                              className="h-full w-full object-contain object-center lg:h-full lg:w-full"
+                            />
+                          </div>
+
                             <div className="mt-4 flex justify-between">
                               <div>
                                 <h3 className="text-sm text-gray-700 font-bold">
